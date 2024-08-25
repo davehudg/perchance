@@ -1,14 +1,3 @@
-    //#region variables
-    var features = {
-        gender: "", hair: "", eyeColor: "", skinColor: "", hasGlasses: "", freckles: "", age: "", 
-        facialHair: "", faceShape: "", faceLength: "", hairline: "", forehead: "", eyebrows: "",
-        browRidge: "", eyeShape: "", eyeSet: "", nose: "", cheekBones: "", lips: "", chin: "",
-        bodyType: "", bodyComp: "", muscularity: "", height: "", bustSize: ""
-    };
-
-    var hairElements = { hairColor: "", hairStyle: "", highlights: "" };
-
-    //#endregion
 
     //#region Misc
 
@@ -42,7 +31,7 @@
             }
         });
     }
-    
+
     //#endregion
 
     //#region Random
@@ -99,24 +88,85 @@
 
     //#region Chat
 
-    const prompt = ["I want you to describe the physical appearance of a person using the following attributes: person's name, 'gender', 'hairColor', 'hairStyle', 'eyeColor', 'skinColor', 'freckles' " +
-        "- in terms of none, some on the bridge of their nose, light body freckles, a lot of body freckle, 'age' - in terms of stage of life Child, Pre-Teen, Teenager, Young Adult, 'faceShape', 'faceLength', 'hairline', " + //" 'forehead', " +
-        "'eyebrows', 'browRidge', 'eyeShape', 'eyeSet', 'nose', 'cheekBones', 'lips', 'chin', 'bodyType', 'muscularity', 'bodyComposition', 'height' - in terms of relation to the general population small, " +
-        "average, tall, very tall 'bustSize' - if female, in terms of relation to their body proportions flat, small, proportional, large, huge. The output of the attributes should be in a list as " +
-        "follows: attributeName: attribute description. Each attribute shoul be on their own line. All descriptions should not contain flowery language, and should be succinct and matter of fact."];
+    const prompt = [`I want you to describe the physical appearance of a person using the following attributes: "name", "gender", "hairColor", "hairStyle", "eyeColor", "skinColor", "freckles" 
+        - in terms of none, some on the bridge of their nose, light body freckles, a lot of body freckles, "age" - in terms of stage of life Child, Pre-Teen, Teenager, Young Adult, "faceShape", "faceLength", "hairline",
+        "eyebrows", "browRidge", "eyeShape", "eyeSet", "nose", "cheekBones", "lips", "chin", "bodyType", "muscularity", "bodyComposition", "height" - in terms of relation to the general population small, 
+        average, tall, very tall "bustSize" - if female, in terms of relation to their body proportions flat, small, proportional, large, huge. The output of the attributes should be in a list as 
+        follows: attributeName: attribute description. attribute names should appear as they are listed. Each attribute should be on it's own line. No descriptions should contain flowery language, and should be succinct and matter of fact.`];
+
+    function genDescriptionOutput(){
+        document.getElementById("aiFace").style.display = "none";
+        document.getElementById("responseEl").style.display = "inline-block";
+        document.getElementById("loaderEl").innerHTML=output.evaluateItem;
+    }
 
     function parseOutput() {
         let textDump = document.getElementById("responseEl");
         let text = textDump.value;
         let pattern = /- (?<key>[\w\s]+): (?<val>[^\n]+)/gi;
         for (const match of text.matchAll(pattern)) {
+            console.log("parse loop started");
             let key = match.groups.key;
+            let nout = document.getElementById("pName");
+            if (key == "name") {
+                nout.innerHTML = match.groups.val;
+                console.log("name set");
+                console.log(nout.textContent);
+                continue;
+            }
+            if (key == "age") {
+                nout.innerHTML = nout.innerHTML + ", " + match.groups.val;
+                console.log(nout.textContent);
+                continue;
+            }
+            if (key.includes("hair")) {
+                console.log("entered hair");
+                if (key.includes("color")) {
+                    let val = match.groups.val.toLowerCase();
+                    let idx = hairColorVt.findIndex(obj => obj.value.includes(val))
+                    if (hidx > -1) {
+                        console.log(hairColorVt[idx].value);
+                        features["hairColor"] = hairColorVt[idx].value;;
+                        features["eyebrowColor"] = hairColorVt[idx].value;;
+                        features["bodyHairColor"] = hairColorVt[idx].value;;
+                    }
+                    else {
+                        console.log(match.groups.val);
+                        features["hairColor"] = match.groups.val;
+                        features["eyebrowColor"] = match.groups.val;
+                        features["bodyHairColor"] = match.groups.val;
+                    }
+                    continue;
+                }
+                else {
+                    console.log(match.groups.val);
+                    features["hair"] = features["hair"] + " " + match.groups.val;;
+                    console.log(features["hair"]);
+                    continue;
+                }
+            }
             if (features.hasOwnProperty(key)) {
+                console.log("has feature", key);
+                let dArr = eval(`${key}Vt`);
                 let val = match.groups.val.toLowerCase();
-                features[key] = val + " " + key;
+                let idx = dArr.findIndex(obj => obj.value.includes(val))
+                if (idx > -1) {
+                    features[key] = dArr[idx].value;
+                    console.log(features[key]);
+                }
+                else {
+                    features[key] = val + " " + key;
+                    console.log(features[key]);
+                }
+            }
+            else{
+                console.log("no property", match.groups.val);
             }
         }
         setFeatureText();
+        document.getElementById("responseEl").style.display = "none";
+        document.getElementById("aiFace").style.display = "inline";
+
         update();
     }
 
@@ -126,54 +176,66 @@
 
     //#endregion
 
-    //#region Populate functions
+    //#region Form interaction functions
 
     document.querySelectorAll("select").forEach(select => {
         select.addEventListener("change", function () {
             switch (this.id) {
                 case "facialFeature":
                     populateFaceFeature(this.value);
+                    populateModifier(this.value);
+                    setToolTip("none", this.value);
                     break;
                 case "facialFeatureType":
-                    updateFeatureType("facial", this.value);
+                    setFeatureType("facial", this.value);
                     setToolTip("facial", this.value);
                     break;
                 case "bodyFeature":
                     populateBodyFeature(this.value);
+                    setToolTip("none", this.value);
                     break;
                 case "bodyFeatureType":
-                    updateFeatureType("body", this.value);
+                    setFeatureType("body", this.value);
                     setToolTip("body", this.value);
                     break;
                 case "hair":
                     populateHair(this.value);
+                    setToolTip("none", this.value);
                     break;
                 case "hairType":
-                    populateHairElement(this.value);
+                    setHairElement(this.value);
+                    setToolTip("none", this.value);
+                    break;
+                case "modifiers":
+                case "bridges":
+                    setFeatureTypeWithMod(this.value);
                     break;
                 default:
-                    updateFeature(this.id.split('FeatureType')[0], this.value);
+                    setFeature(this.id.split('FeatureType')[0], this.value);
+                    setToolTip("none", this.value);
                     break;
             }
         });
     });
 
-    function setToolTip(type, value) {
-        let feature = "";
-        if (type == "facial") {
-            feature = document.getElementById("facialFeature");
-        }
-        else {
-            feature = document.getElementById("bodyFeatureType");
-        }
-        let dVar = eval(`${feature.value}Vt`);
-        result = dVar.find(item => item.value == value);
-        if (result.hasOwnProperty("toolTip")) {
-            document.getElementById("toolTip").textContent = result.toolTip;
-        }
-        else {
-            document.getElementById("toolTip").textContent = "";
-        }
+    //#region populate functions - fills selects
+
+    function populateSelect(header, parentId, list) {
+        let selectItem = document.getElementById(parentId);
+        selectItem.innerHTML = "";
+        let newHeader = document.createElement("option");
+        newHeader.textContent = header;
+        newHeader.value = "";
+        selectItem.appendChild(newHeader);
+        list.forEach((item, index) => {
+            // create new element
+            let newOption = document.createElement("option");
+            // set new element properties
+            newOption.value = item.value;
+            newOption.textContent = item.text;
+            // add new element to recieving element
+            selectItem.appendChild(newOption);
+        });
     }
 
     function populateFaceFeature(feature) {
@@ -232,30 +294,60 @@
         });
     }
 
-    function setFeatureText() {
-        let nonEmptyEnteries = Object.entries(features).filter(([key, value]) => value !== "" && value !== null);
-        let nonEmptyValues = nonEmptyEnteries.map(([key, value]) => value)
-        let result = nonEmptyValues.join(", ");
-        document.getElementById("text").innerHTML = result;
+    function populateModifier(group){
+        let bridge = document.getElementById("bridges");
+        let mods = document.getElementById("modifiers");
+        switch(group){
+            case "eyebrows":
+                populateSelect("Eyebrow Modifiers", "modifiers", eyebrowModVt)
+                bridge.style.display = "none";
+                break;
+            case "nose":
+                populateSelect("Nose Modifiers", "modifiers", noseModVt)
+                bridge.style.display = "inline";
+                break;
+            case "lips":
+                populateSelect("Lip Modifiers", "modifiers", lipModVt)
+                bridge.style.display = "none";
+                break;
+            case "chin":
+                populateSelect("Jawlines", "modifiers", jawlineVt)
+                bridge.style.display = "none";
+                break;
+            default: 
+                mods.style.display = "none";
+                bridge.style.display = "none";
+                return;
+        }
+        mods.style.display = "inline";
     }
 
-    function populateHairElement(feature) {
-        let hairSelect = document.getElementById("hair");
-        console.log(hairSelect.value);
-        console.log(hairElements);
-        hairElements[hairSelect.value] = feature;
-        console.log(hairElements);
-        let nonEmptyEnteries = Object.entries(hairElements).filter(([key, value]) => value !== "" && value !== null);
-        let nonEmptyValues = nonEmptyEnteries.map(([key, value]) => value)
-        let result = nonEmptyValues.join(" ");
-        console.log(result);
-        features["hair"] = result;
+    //#endregion
+
+    //#region set functions - sets values
+    
+    function setFeature(featureType, selectedIndex) {
+        features[featureType] = selectedIndex;
         setFeatureText();
     }
 
-    function updateFeatureType(type, value) {
+    function setFeatureType(type, value) {
         if (type === "facial") {
             let faceSelect = document.getElementById("facialFeature");
+            let modbox = document.getElementById("modifiers");
+            let nosebridge = document.getElementById("bridges");
+            let color = hairElements["hairColor"];
+            if (faceSelect.value == "nose" && nosebridge.value != ""){
+                value = `${value} ${nosebridge.value}`;
+            }
+            if(["nose", "eyebrows", "lips", "chin"].includes(faceSelect.value) &&
+                modbox.value != "") {
+                value = `${modbox.value} ${value}`;
+            }
+            if (faceSelect.value == "eyebrows" && (color != "" && color != undefined)){
+                color = color.substring(0, color.length - 5);
+                value = `${color} ${value}`;
+            }
             features[faceSelect.value] = value;
         }
         else {
@@ -265,32 +357,78 @@
         setFeatureText();
     }
 
-    function updateFeature(featureType, selectedIndex) {
-        features[featureType] = selectedIndex;
+    function setFeatureText() {
+        let nonEmptyEnteries = Object.entries(features).filter(([key, value]) => value !== "" && value !== null);
+        let nonEmptyValues = nonEmptyEnteries.map(([key, value]) => value)
+        let result = nonEmptyValues.join(", ");
+        document.getElementById("pText").innerHTML = result;
+    }
+
+    function setToolTip(type, value) {
+        let feature = "";
+        if (type == "none") {
+            document.getElementById("toolTip").textContent = "";
+            return;
+        }
+        if (type == "facial") {
+            feature = document.getElementById("facialFeature");
+        }
+        else {
+            feature = document.getElementById("bodyFeature");
+        }
+        let dVar = eval(`${feature.value}Vt`);
+        result = dVar.find(item => item.value == value);
+        if (result.hasOwnProperty("toolTip")) {
+            document.getElementById("toolTip").textContent = result.toolTip;
+        }
+        else {
+            document.getElementById("toolTip").textContent = "";
+        }
+    }
+
+    function setHairElement(feature) {
+        let hairSelect = document.getElementById("hair");
+        hairElements[hairSelect.value] = feature;
+        let nonEmptyEnteries = Object.entries(hairElements).filter(([key, value]) => value !== "" && value !== null);
+        let nonEmptyValues = nonEmptyEnteries.map(([key, value]) => value)
+        let result = nonEmptyValues.join(" ");
+        features["hair"] = result;
+        setFeatureText();
+    }
+
+    function setFeatureTypeWithMod(modifier){
+        let faceSelect = document.getElementById("facialFeature");
+        let feature = document.getElementById("facialFeatureType");
+        let color = hairElements["hairColor"];
+        switch(faceSelect.value){
+            default :
+                break;
+            case "lips":
+            case "chin":
+            case "eyebrows":
+                let value = `${modifier} ${feature.value}`;
+                if (faceSelect.value == "eyebrows" && (color != "" && color != undefined)){
+                    color = color.substring(0, color.length - 5);
+                    value = `${color} ${value}`;
+                }
+                features[faceSelect.value] = value;
+                // add tool tip
+                break;
+            case "nose":
+                let mod = document.getElementById("modifiers");
+                let nosebridge = document.getElementById("bridges")
+                features[faceSelect.value] = `${mod.value} ${feature.value} ${nosebridge.value}`;
+                break;
+        }
         setFeatureText();
     }
 
     //#endregion
 
-    //#region page setup
 
-    function populateSelect(header, parentId, list) {
-        let selectItem = document.getElementById(parentId);
-        selectItem.innerHTML = "";
-        let newHeader = document.createElement("option");
-        newHeader.textContent = header;
-        newHeader.value = "";
-        selectItem.appendChild(newHeader);
-        list.forEach((item, index) => {
-            // create new element
-            let newOption = document.createElement("option");
-            // set new element properties
-            newOption.value = item.value;
-            newOption.textContent = item.text;
-            // add new element to recieving element
-            selectItem.appendChild(newOption);
-        });
-    }
+    //#endregion
+
+    //#region page setup
 
     function setupSelects() {
         populateSelect("Skin Tone", "skinColor", skinColorVt);
@@ -302,6 +440,7 @@
         populateSelect("Facial Features", "facialFeature", faceFeatsVt);
         populateSelect("Body Features", "bodyFeature", bodyFeatsVt);
         populateSelect("Hair", "hair", hairVt);
+        populateSelect("Bridge", "bridges", noseBridgeVt);
     }
-    
-  //#endregion
+
+    //#endregion
