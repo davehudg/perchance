@@ -1,4 +1,4 @@
-    const faceShapeVt = [{ value: "", text: "", toolTip: "" }, { value: "flat face", text: "Flat Face", toolTip: "A face shape with minimal angles, a broad forehead, and a softly rounded jawline, creating a generally uniform appearance." },
+var faceShapeVt = [{ value: "", text: "", toolTip: "" }, { value: "flat face", text: "Flat Face", toolTip: "A face shape with minimal angles, a broad forehead, and a softly rounded jawline, creating a generally uniform appearance." },
     { value: "oval shaped face", text: "Oval Shaped Face", toolTip: "An elegant, balanced face with a gently curving jawline and forehead, slightly narrower than the cheekbones." },
     { value: "round shaped face", text: "Round Shaped Face", toolTip: "Full cheeks and a face that is equally wide at the cheekbones and jaw, with a soft, rounded jawline and forehead." },
     { value: "square shaped face", text: "Square Shaped Face", toolTip: "Angular features with a strong, broad jawline and forehead that are roughly the same width as the cheekbones." },
