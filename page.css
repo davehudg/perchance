@@ -1,0 +1,72 @@
+* {
+    --bg-color: #1f2937;
+    --text-color: #fff;
+    --button-color: #268bd2;
+    --color: #ff4b6c;
+    --button-hover-color: #f75e6c;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 16px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+button {
+    align-items: start;
+    color: var(--text-color);
+    background-color: var(--button-color);
+    border: 2px solid var(--button-color);
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+button:hover {
+    background-color: var(--button-hover-color);
+}
+
+textarea,
+select,
+input {
+    /* align-items: start; */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 2px solid var(--button-color);
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 5px var(--button-color);
+}
+
+.accordion {
+    background-color: --bg-color;
+    color: --text-color;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active,
+.accordion:hover {
+    background-color: --button-hover-color;
+}
+
+/* Style the accordion panel. Note: hidden by default */
+.panel {
+    padding: 0 18px;
+    background-color: --bg-color;
+    display: none;
+    overflow: hidden;
+}
