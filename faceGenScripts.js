@@ -1,14 +1,25 @@
 //#region Misc functions
 
-function changeGender(genderSel, facialHairSel) {
-        if (genderSel.value == "(male:1.2)") {
-            facialHairSel.style.display = "inline";
+function changeGender(gender, facialHair) {
+        if (gender.value == "(male:1.2)") {
+            facialHair.style.display = "inline";
         }
         else {
-            facialHairSel.value = "";
-            facialHairSel.style.display = "none";
+            facialHair.value = "";
+            facialHair.style.display = "none";
         }
     }
 
+
+//#endregion
+
+//#region Set functions
+
+    function setFeatureText(Obj, allFeatures) {
+        let nonEmptyEnteries = Object.entries(allFeatures).filter(([key, value]) => value !== "" && value !== null);
+        let nonEmptyValues = nonEmptyEnteries.map(([key, value]) => value)
+        let result = nonEmptyValues.join(", ");
+        Obj.innerHTML = result;
+    }
 
 //#endregion
