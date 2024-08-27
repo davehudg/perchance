@@ -136,9 +136,13 @@ var faceShapeVt = [{ value: "", text: "", toolTip: "" }, { value: "flat face", t
     { value: "tall", text: "tall" }];
     const maleHairStyles = [{ value: "comb over", text: "Comb Over" }, { value: "quiff", text: "Quiff" }, { value: "buzz cut", text: "Buzz Cut" },
     { value: "crew cut", text: "Crew Cut" }, { value: "short afro", text: "Short Afro" }, { value: "afro", text: "Afro" },
-    { value: "side part with short heir", text: "Side Part With Short Heir" }, { value: "ivy league haircut", text: "Ivy League Haircut" },
+    { value: "side part with short hair", text: "Side Part With Short Hair" }, { value: "ivy league haircut", text: "Ivy League Haircut" },
     { value: "fade", text: "Fade" }, { value: "slicked back", text: "Slicked Back" }, { value: "textured crop", text: "Textured Crop" }];
     const femaleHairStyles = [{ value: "pixie cut", text: "Pixie Cut" }, { value: "textured pixie cut", text: "Textured Pixie Cut" }, 
+    { value: "undercut", text: "Undercut" }, { value: "buzz cut", text: "Buzz Cut" }, { value: "spiky short hair", text: "Spiky Short Hair" }, 
+    { value: "layered bob", text: "Layered Bob" }, { value: "tousled short hair", text: "Tousled Short Hair" }, { value: "short braids", text: "Short Braids" },
+    { value: "shoulder-length layers", text: "Shoulder-Length Layers" }, { value: "medium curly hair", text: "Medium Curly Hair" }, { value: "wavy medium hair", text: "Wavy Medium Hair" },
+    { value: "dutch braids", text: "Dutch Braids" }, { value: "french braids", text: "French Braids" }, { value: "straight long hair", text: "Straight Long Hair" },
     { value: "bob", text: "Bob" }, { value: "side-swept bangs", text: "Side-Swept Bangs" }, { value: "rachel hair style", text: "Rachel Hair Style" },
     { value: "balayage highlights", text: "Balayage Highlights" }, { value: "loose waves", text: "Loose Waves" }, { value: "braids", text: "Braids" },
     { value: "updo", text: "Updo" }, { value: "high ponytail", text: "High Ponytail" }, { value: "long layered hair", text: "Long Layered Hair" },
@@ -180,3 +184,4 @@ var faceShapeVt = [{ value: "", text: "", toolTip: "" }, { value: "flat face", t
     { value: "with indigo highlights", text: "Indigo" }, { value: "with white highlights", text: "White" }, { value: "with black highlights", text: "Black" }];
     const hairVt = [{ value: "hairColor", text: "Hair Color" }, { value: "highlights", text: "Highlights" }, { value: "hairStyle", text: "Hair Style" }];
     const genderVt = [{ value: "male", text: "male" }, { value: "female", text: "female" }];
+    const ethnicityVt = {{ value: "white", text: "White" }, { value: "black", text: "Black" }, { value: "latino", text: "Latino" }, { value: "asian", text: "Asian" }, { value: "middle eastern", text: "Middle Eastern" }, { value: "indian", text: "Indian" }];
