@@ -65,7 +65,8 @@ var faceShapeVt = [{ value: "", text: "", toolTip: "" }, { value: "flat face", t
     { value: "button nose", text: "Button Nose", toolTip: "A small, slightly upturned nose with a rounded tip." },
     { value: "aquiline nose", text: "Aquiline Nose", toolTip: "A nose that has a high, curved bridge and a sharp, hooked tip, reminiscent of an eagle's beak." },
     { value: "bulbous nose", text: "Bulbous Nose", toolTip: "A nose that is wide at the tip and often rounded, creating a prominent feature." },
-    { value: "rounded tip nose", text: "Rounded Tip Nose", toolTip: "A nose with a rounded tip, which can appear softer and more youthful." }];
+    { value: "rounded tip nose", text: "Rounded Tip Nose", toolTip: "A nose with a rounded tip, which can appear softer and more youthful." },
+                    { value: "pointed nose", text: "Pointed nose" }];
     const noseModVt = [{ value: "broad", text: "Broad", toolTip: "A nose that is wider at the bridge and can give a strong, bold look." },
     { value: "upturned", text: "Upturned", toolTip: "Nostrils that face upwards, often associated with a cheerful or playful expression." },
     { value: "slightly upturned", text: "Slightly Upturned", toolTip: "A subtle upturn that adds a touch of charm without being overly pronounced." },
@@ -184,4 +185,5 @@ var faceShapeVt = [{ value: "", text: "", toolTip: "" }, { value: "flat face", t
     { value: "with indigo highlights", text: "Indigo" }, { value: "with white highlights", text: "White" }, { value: "with black highlights", text: "Black" }];
     const hairVt = [{ value: "hairColor", text: "Hair Color" }, { value: "highlights", text: "Highlights" }, { value: "hairStyle", text: "Hair Style" }];
     const genderVt = [{ value: "male", text: "male" }, { value: "female", text: "female" }];
-    const ethnicityVt = [{ value: "white", text: "White" }, { value: "black", text: "Black" }, { value: "latino", text: "Latino" }, { value: "asian", text: "Asian" }, { value: "middle eastern", text: "Middle Eastern" }, { value: "indian", text: "Indian" }];
+    const ethnicityVt = [{ value: "white", text: "White" }, { value: "black", text: "Black" }, { value: "latino", text: "Latino" }, { value: "asian", text: "Asian" }, { value: "middle eastern", text: "Middle Eastern" }, { value: "indian", text: "Indian" }, { value: "elven", text: "Elven" }, { value: "dwarven", text: "Dwarven"}];
+    const earsVt = [{ value: "pointed", text: "Pointed" }, { value: "long and pointed", text: "Long and Pointed" }];
