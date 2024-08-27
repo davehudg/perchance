@@ -66,7 +66,7 @@ var faceShapeVt = [{ value: "", text: "", toolTip: "" }, { value: "flat face", t
     { value: "aquiline nose", text: "Aquiline Nose", toolTip: "A nose that has a high, curved bridge and a sharp, hooked tip, reminiscent of an eagle's beak." },
     { value: "bulbous nose", text: "Bulbous Nose", toolTip: "A nose that is wide at the tip and often rounded, creating a prominent feature." },
     { value: "rounded tip nose", text: "Rounded Tip Nose", toolTip: "A nose with a rounded tip, which can appear softer and more youthful." },
-                    { value: "pointed nose", text: "Pointed nose" }];
+    { value: "pointed nose", text: "Pointed nose" }];
     const noseModVt = [{ value: "broad", text: "Broad", toolTip: "A nose that is wider at the bridge and can give a strong, bold look." },
     { value: "upturned", text: "Upturned", toolTip: "Nostrils that face upwards, often associated with a cheerful or playful expression." },
     { value: "slightly upturned", text: "Slightly Upturned", toolTip: "A subtle upturn that adds a touch of charm without being overly pronounced." },
@@ -156,9 +156,9 @@ var faceShapeVt = [{ value: "", text: "", toolTip: "" }, { value: "flat face", t
     { value: "Beige colored skin", text: "Beige" }, { value: "Caramel colored skin", text: "Caramel" }, { value: "Honey colored skin", text: "Honey" }, 
     { value: "Toffee colored skin", text: "Toffee" }, { value: "Chestnut colored skin", text: "Chestnut" }, { value: "Walnut colored skin", text: "Walnut" }, 
     { value: "Mocha colored skin", text: "Mocha" }, { value: "Cocoa colored skin", text: "Cocoa" }, { value: "chocolate colored skin", text: "Chocolate" }, 
-    { value: "dark chocolate colored skin", text: "Dark Chocolate" }];
+    { value: "dark chocolate colored skin", text: "Dark Chocolate" }, { value: " light green skin", text: "Green" }, { value: "light blue skin", text: "Blue" }];
     const eyeColorVt = [{ value: "grey eyes", text: "Grey" }, { value: "blue eyes", text: "Blue" }, { value: "green eyes", text: "Green" }, 
-    { value: "brown eyes", text: "Brown" }, { value: "hazel eyes", text: "Hazel" }];
+    { value: "brown eyes", text: "Brown" }, { value: "hazel eyes", text: "Hazel" }, { value: "amber eyes", text: "Amber eyes"}];
     const glassesVt = [{ value: "cat eye glasses", text: "Cat Eye" }, { value: "browline glasses", text: "Browline" }, { value: "oval glasses", text: "Oval" }, 
     { value: "rectangle glasses", text: "Rectangle" }, { value: "round glasses", text: "Round" }, { value: "aviator glasses", text: "Aviators" }, 
     { value: "sunglasses", text: "Sunglasses" }];
@@ -178,7 +178,8 @@ var faceShapeVt = [{ value: "", text: "", toolTip: "" }, { value: "flat face", t
     const hairColorVt = [{ value: "", text: "" }, { value: "black hair", text: "Black" }, { value: "dark brown hair", text: "Dark Brown" }, 
     { value: "brown hair", text: "Brown" }, { value: "sandy brown hair", text: "Sandy Brown" }, { value: "blonde hair", text: "Blonde" }, 
     { value: "strawberry blonde hair", text: "Strawberry Blonde" }, { value: "red hair", text: "Red" }, { value: "auburn hair", text: "Auburn" }, 
-    { value: "grey hair", text: "Grey" }, { value: "white hair", text: "White" }, { value: "salt and pepper hair", text: "Salt and Pepper" }, { value: "bald", text: "Bald" }];
+    { value: "grey hair", text: "Grey" }, { value: "white hair", text: "White" }, { value: "salt and pepper hair", text: "Salt and Pepper" }, { value: "bald", text: "Bald" },
+    { value: "gold colored hair", text: "Gold Hair" }, { value: "platinum blonde hair", text: "Platinum Blonde Hair" }];
     const highlightVt = [{ value: "", text: "None" }, { value: "with blonde highlights", text: "Blonde" }, { value: "with auburn highlights", text: "Auburn" }, 
     { value: "with red highlights", text: "Red" }, { value: "with orange highlights", text: "Orange" }, { value: "with yellow highlights", text: "Yellow" }, 
     { value: "with green highlights", text: "Green" }, { value: "with blue highlights", text: "Blue" }, { value: "with violet highlights", text: "Violet" },
