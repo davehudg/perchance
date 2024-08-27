@@ -184,4 +184,4 @@ var faceShapeVt = [{ value: "", text: "", toolTip: "" }, { value: "flat face", t
     { value: "with indigo highlights", text: "Indigo" }, { value: "with white highlights", text: "White" }, { value: "with black highlights", text: "Black" }];
     const hairVt = [{ value: "hairColor", text: "Hair Color" }, { value: "highlights", text: "Highlights" }, { value: "hairStyle", text: "Hair Style" }];
     const genderVt = [{ value: "male", text: "male" }, { value: "female", text: "female" }];
-    const ethnicityVt = {{ value: "white", text: "White" }, { value: "black", text: "Black" }, { value: "latino", text: "Latino" }, { value: "asian", text: "Asian" }, { value: "middle eastern", text: "Middle Eastern" }, { value: "indian", text: "Indian" }];
+    const ethnicityVt = [{ value: "white", text: "White" }, { value: "black", text: "Black" }, { value: "latino", text: "Latino" }, { value: "asian", text: "Asian" }, { value: "middle eastern", text: "Middle Eastern" }, { value: "indian", text: "Indian" }];
