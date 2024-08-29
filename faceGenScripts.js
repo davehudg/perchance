@@ -9,7 +9,22 @@ function changeGender(gender, facialHair) {
             facialHair.style.display = "none";
         }
     }
+    
+    function deepCopyArray(arr) {
+        return arr.map(item => Array.isArray(item) ? deepCopyArray(item) : 
+            (item && typeof item === 'object') ? deepCopyObject(item) : item);
+    }
 
+    function deepCopyObject(obj) {
+        const copy = {};
+        for (let key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                copy[key] = (obj[key] && typeof obj[key] === 'object') ? 
+                    (Array.isArray(obj[key]) ? deepCopyArray(obj[key]) : deepCopyObject(obj[key])) : obj[key];
+            }
+        }
+        return copy;
+    }
 
 //#endregion
 

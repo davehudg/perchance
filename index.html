@@ -1,0 +1,513 @@
+<html>
+<!-- 8/26 2024 PM -->
+<!-- TODO
+    Save and load settings
+    make desc hidden when running ai mode
+    -->
+<head>
+    <title>[pageTitle]</title>
+    <script src="https://davehudg.github.io/perchance/lists.js"></script>
+    <script src="https://davehudg.github.io/perchance/faceGenScripts.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://davehudg.github.io/perchance/page.css" />
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script> -->
+</head>
+<body>
+    <h1>[pageTitle]</h1>
+    <!--<button class="accordion">Selection & Generation</button> -->
+    <div> <!-- <div class="panel"> -->
+        <div>
+            <select id="gender" onchange="changeGender(genderObj, facialHairObj)">
+                <option value="">Gender</option>
+                <option value="(male:1.2)">Male</option>
+                <option value="female">Female</option>
+            </select>
+            <select id="ethnicity"></select>
+            <select id="eyeColor"></select>
+            <select id="skinColor"></select>
+            <select id="age"></select>
+            <select id="glasses"></select>
+            <select id="freckles"></select>
+            <select id="facialHair" style="display: none;"></select>
+            <select id="hair"></select>
+            <select id="hairType"></select>
+        </div>
+
+        <select id="facialFeature"></select>
+        <select id="facialFeatureType"></select>
+        <select id="modifiers" style="display: none;"></select>
+        <select id="bridges" style="display: none;"></select>
+        <br>
+        <select id="bodyFeature"></select>
+        <select id="bodyFeatureType"></select>
+
+        <p id="toolTip"></p>
+        <button id="random" onclick="genRandomFeatures()">Random</button>
+        <button id="gen" onclick="updateImages()">Generate Images</button>
+        <button id="reset" onclick="reset(pTextObj, features)">Reset</button>
+        <br>
+        <textarea id="pText" name="pText" cols="55" rows="10">mannequin</textarea>
+    </div>
+    <div>
+        <input type="file" id="fileInput">
+        <pre id="fileContent"></pre>
+        <select id="preset">
+            <option value="">Choose a preset</option>
+        </select>
+        <input id="presetName" type="text" />
+        <button id="add" onclick="addToArray()">Add To Array</button>
+        <button id="save" onclick="writeFileToDisk(listFeatures)">Save Features</button>
+    </div>
+
+    <!-- <button class="accordion">Ai Generated description</button> -->
+    <div> <!-- <div class="panel"> -->
+        <textarea id="instructionEl" placeholder="Type the name of someone famous" cols="40" rows="1"></textarea><br>
+        <button id="generateBtn" onclick="genDescriptionOutput()">Generate Description</button>
+        <button id="something" onclick="parseOutput()">Parse Output</button>
+        <div id="loaderEl"></div>
+        <textarea id="responseEl" cols="55" rows="20" style="display: none;""></textarea>
+        <textarea id="pName" hidden>mannequin</textarea>
+    </div>
+    <br>
+    <div id="pics" style="display: none;">
+        <a id="aiFace" style="display: none;"">[outputName]</a>
+        [outputFace]
+        [outputFace]
+        <br>
+        [outputBody]
+        [outputBody]
+    </div>
+    </div>
+</body>
+<script>
+    //#region variables
+    var features = {
+        name: "", gender: "", ethnicity: "", hair: "", eyeColor: "", skinColor: "", hasGlasses: "", freckles: "", age: "", facialHair: "", faceShape: "", 
+        faceLength: "", hairline: "", forehead: "", eyebrows: "", browRidge: "", eyeShape: "", eyeSet: "", nose: "", cheekBones: "", 
+        lips: "", chin: "", bodyType: "", bodyComp: "", muscularity: "", height: "", bustSize: "", bodyHairColor: "", eyeBrowColor: ""
+    };
+
+    const listFeatures = new Array;
+
+    var hairElements = { hairColor: "", hairStyle: "", highlights: "" };
+
+    //#endregion
+
+    //#region
+    const genderObj = document.getElementById("gender");
+    const eyeColorObj = document.getElementById("eyeColor");
+    const skinColorObj = document.getElementById("skinColor");
+    const ageObj = document.getElementById("age");
+    const glassesObj = document.getElementById("glasses");
+    const frecklesObj = document.getElementById("freckles");
+    const facialHairObj = document.getElementById("facialHair");
+    const hairObj = document.getElementById("hair");
+    const hairTypeObj = document.getElementById("hairType");
+    const facialFeatureObj = document.getElementById("facialFeature");
+    const facialFeatureTypeObj = document.getElementById("facialFeatureType");
+    const modifiersObj = document.getElementById("modifiers");
+    const bridgesObj = document.getElementById("bridges");
+    const bodyFeatureObj = document.getElementById("bodyFeature");
+    const bodyFeatureTypeObj = document.getElementById("bodyFeatureType");
+    const toolTipObj = document.getElementById("toolTip");
+    const randomObj = document.getElementById("random");
+    const genObj = document.getElementById("gen");
+    const resetObj = document.getElementById("reset");
+    const pTextObj = document.getElementById("pText");
+    const instructionElObj = document.getElementById("instructionEl");
+    const generateBtnObj = document.getElementById("generateBtn");
+    const somethingObj = document.getElementById("something");
+    const loaderElObj = document.getElementById("loaderEl");
+    const responseElObj = document.getElementById("responseEl");
+    const pNameObj = document.getElementById("pName");
+    const aiFaceObj = document.getElementById("aiFace");
+    const picsObj = document.getElementById("pics");
+    const ethnicityObj = document.getElementById("ethnicity");
+    const saveObj = document.getElementById("save");
+    const presetNameObj = document.getElementById("presetName");
+    const presetObj = document.getElementById("preset");
+
+    var acc = document.getElementsByClassName("accordion");
+
+    //#endregion
+
+    //#region Misc
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function () {
+            /* Toggle between adding and removing the "active" class,
+            to highlight the button that controls the panel */
+            this.classList.toggle("active");
+
+            /* Toggle between hiding and showing the active panel */
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+            } else {
+                panel.style.display = "block";
+            }
+        });
+    }
+
+    async function writeFileToDisk(arrayOfFeatures) {
+        const fileHandle = await window.showSaveFilePicker();
+        const fileStream = await fileHandle.createWritable();
+        await fileStream.write(new Blob([JSON.stringify(arrayOfFeatures)], {type: "text/plain"}));
+        await fileStream.close();
+    }
+
+    async function readFileFromDisk() {
+        const [fileHandle] = await window.showOpenFilePicker();
+        const file = await fileHandle.getFile();
+        const fileContent = await file.text();
+        listFeatures.push(JSON.parse(fileContent));
+
+        listFeatures.forEach(featureSet =>{
+            let item = document.createElement("option");
+            item.value=featureSet.name;
+            item.text=featureSet.name;
+            presetObj.appendChild(item);
+        });
+    }
+
+    function addToArray(){
+        if(presetNameObj.value == ""){
+            presetNameObj.style.background="yellow";
+            return;
+        }
+
+        features["name"] = presetNameObj.value;
+        let item = document.createElement("option");
+        item.value=presetNameObj.value;
+        item.text=presetNameObj.value;
+        presetObj.appendChild(item);
+        listFeatures.push(deepCopyObject(features));
+        reset(pTextObj, features);
+        presetNameObj.value = "";
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            readFileFromDisk(file);
+        }
+    });
+
+    function updateImages(){
+        picsObj.style.display = "inline";
+        update();
+    }
+
+    //#endregion
+
+    //#region Random
+
+    function genRandomFeatures() {
+        features["gender"] = ["(male:1.2)", "female"][getRandomInt(0, 2)];
+        features["eyeColor"] = eyeColorVt[getRandomInt(0, eyeColorVt.length)].value;
+        features["skinColor"] = skinColorVt[getRandomInt(0, skinColorVt.length)].value;
+        features["age"] = ageVt[7].value;
+        //features["hasGlasses"] = glassesVt[getRandomInt(0, glassesVt.length)].value;
+        features["freckles"] = frecklesVt[getRandomInt(0, frecklesVt.length)].value;
+        let hair = hairColorVt[getRandomInt(1, hairColorVt.length)].value;
+        if (features["gender"] == "(male:1.2)") {
+            features["facialHair"] = facialHairVt[getRandomInt(0, facialHairVt.length)].value;
+            features["hair"] = hair + " " + maleHairStyles[getRandomInt(0, maleHairStyles.length)].value;
+            // + " " + highlightVt[getRandomInt(0, highlightVt.length)].value;
+        }
+        else {
+            features["facialHair"] = "";
+            features["hair"] = hair + " " + femaleHairStyles[getRandomInt(0, femaleHairStyles.length)].value;
+            // + " " + highlightVt[getRandomInt(0, highlightVt.length)].value;
+        }
+        faceFeatsVt.forEach(item => {
+            let dArr = eval(`${item.value}Vt`);
+            let numItems = dArr.length;
+            features[item.value] = dArr[getRandomInt(1, numItems)].value;
+        });
+        bodyFeatsVt.forEach(item => {
+            let dArr = eval(`${item.value}Vt`);
+            let numItems = dArr.length;
+            features[item.value] = dArr[getRandomInt(1, numItems)].value;
+        });
+        if (features["gender"] == "(male:1.2)") {
+            features["bustSize"] = "";
+        }
+        setFeatureText(pTextObj, features);
+        picsObj.style.display = "inline";
+        update();
+    }
+
+    //#endregion
+    
+
+    //#region AI feature generation
+
+    const prompt = [`I want you to describe the physical appearance of a person using the following attributes: "name", "gender", "hairColor", "hairStyle", "eyeColor", "skinColor", "freckles" 
+        - in terms of none, some on the bridge of their nose, light body freckles, a lot of body freckles, "age" - in terms of stage of life Child, Pre-Teen, Teenager, Young Adult, "faceShape", "faceLength", "hairline",
+        "eyebrows", "browRidge", "eyeShape", "eyeSet", "nose", "cheekBones", "lips", "chin", "bodyType", "muscularity", "bodyComposition", "height" - in terms of relation to the general population small, 
+        average, tall, very tall "bustSize" - if female, in terms of relation to their body proportions flat, small, proportional, large, huge. The output of the attributes should be in a list as 
+        follows: attributeName: attribute description. attribute names should appear as they are listed. Each attribute should be on it's own line. No descriptions should contain flowery language, and should be succinct and matter of fact.`];
+
+
+    function genDescriptionOutput(){
+        aiFaceObj.style.display = "none";
+        responseElObj.style.display = "inline-block";
+        loaderElObj.innerHTML=output.evaluateItem;
+    }
+
+    function parseOutput() {
+        let textDump = document.getElementById("responseEl");
+        let text = textDump.value;
+        let pattern = /- (?<key>[\w\s]+): (?<val>[^\n]+)/gi;
+        for (const match of text.matchAll(pattern)) {
+            console.log("parse loop started");
+            let key = match.groups.key;
+            let nout = document.getElementById("pName");
+            if (key == "name") {
+                nout.innerHTML = match.groups.val;
+                console.log("name set");
+                console.log(nout.textContent);
+                continue;
+            }
+            if (key == "age") {
+                nout.innerHTML = nout.innerHTML + ", " + match.groups.val;
+                console.log(nout.textContent);
+                continue;
+            }
+            if (key.includes("hair")) {
+                console.log("entered hair");
+                if (key.includes("color")) {
+                    let val = match.groups.val.toLowerCase();
+                    let idx = hairColorVt.findIndex(obj => obj.value.includes(val))
+                    if (hidx > -1) {
+                        console.log(hairColorVt[idx].value);
+                        features["hairColor"] = hairColorVt[idx].value;;
+                        features["eyebrowColor"] = hairColorVt[idx].value;;
+                        features["bodyHairColor"] = hairColorVt[idx].value;;
+                    }
+                    else {
+                        console.log(match.groups.val);
+                        features["hairColor"] = match.groups.val;
+                        features["eyebrowColor"] = match.groups.val;
+                        features["bodyHairColor"] = match.groups.val;
+                    }
+                    continue;
+                }
+                else {
+                    console.log(match.groups.val);
+                    features["hair"] = features["hair"] + " " + match.groups.val;;
+                    console.log(features["hair"]);
+                    continue;
+                }
+            }
+            if (features.hasOwnProperty(key)) {
+                console.log("has feature", key);
+                let dArr = eval(`${key}Vt`);
+                let val = match.groups.val.toLowerCase();
+                let idx = dArr.findIndex(obj => obj.value.includes(val))
+                if (idx > -1) {
+                    features[key] = dArr[idx].value;
+                    console.log(features[key]);
+                }
+                else {
+                    features[key] = val + " " + key;
+                    console.log(features[key]);
+                }
+            }
+            else{
+                console.log("no property", match.groups.val);
+            }
+        }
+        setFeatureText(pTextObj, features);
+        document.getElementById("responseEl").style.display = "none";
+        document.getElementById("aiFace").style.display = "inline";
+        picsObj.style.display = "inline";
+
+        update();
+    }
+
+    Object.prototype.hasOwnPropertyCI = function (prop) {
+        return Object.keys(this).some(key => key.toLowerCase() === prop.toLowerCase());
+    };
+
+    //#endregion
+
+    //#region Form interaction functions
+
+    document.querySelectorAll("select").forEach(select => {
+        select.addEventListener("change", function () {
+            switch (this.id) {
+                case "facialFeature":
+                    populateFaceFeature(this.value);
+                    populateModifier(this.value, bridgesObj, modifiersObj, eyebrowModVt, noseModVt, lipModVt, jawlineVt);
+                    setToolTip("none", this.value);
+                    break;
+                case "facialFeatureType":
+                    setFeatureType("facial", this.value);
+                    setToolTip("facial", this.value);
+                    break;
+                case "bodyFeature":
+                    populateBodyFeature(this.value);
+                    setToolTip("none", this.value);
+                    break;
+                case "bodyFeatureType":
+                    setFeatureType("body", this.value);
+                    setToolTip("body", this.value);
+                    break;
+                case "hair":
+                    populateHair(this.value, hairTypeObj, genderObj, hairColorVt, highlightVt, maleHairStyles, femaleHairStyles);
+                    setToolTip("none", this.value);
+                    break;
+                case "hairType":
+                    setHairElement(this.value, hairObj, hairElements, features, pTextObj);
+                    setToolTip("none", this.value);
+                    break;
+                case "modifiers":
+                case "bridges":
+                    setFeatureTypeWithMod(this.value);
+                    break;
+                case "preset":
+                    features = JSON.parse(JSON.stringify(listFeatures.filter(x => x.name == this.value)));
+                    features[0].name = "";
+                    setFeatureText(pTextObj, features[0]);
+                    break;
+                default:
+                    setFeature(this.id.split('FeatureType')[0], this.value, features, pTextObj);
+                    setToolTip("none", this.value);
+                    break;
+            }
+        });
+    });
+
+    //#region populate functions - fills selects
+
+    function populateFaceFeature(feature) {
+        let faceFeatSelect = document.getElementById("facialFeatureType");
+        faceFeatSelect.innerHTML = "";
+        let dVar = eval(`${feature}Vt`);
+        dVar.forEach((type, index) => {
+            let option = document.createElement("option");
+            option.value = type.value;
+            option.textContent = type.text;
+            faceFeatSelect.appendChild(option);
+        });
+    }
+
+    function populateBodyFeature(feature) {
+        let bodyFeatSelect = document.getElementById("bodyFeatureType");
+        bodyFeatSelect.innerHTML = "";
+        let dVar = eval(`${feature}Vt`);
+        dVar.forEach((type, index) => {
+            let option = document.createElement("option");
+            option.value = type.value;
+            option.textContent = type.text;
+            bodyFeatSelect.appendChild(option);
+        });
+    }
+
+    //#endregion
+
+    //#region set functions - sets values
+    
+    function setFeatureType(type, value) {
+        if (type === "facial") {
+            let faceSelect = document.getElementById("facialFeature");
+            let modbox = document.getElementById("modifiers");
+            let nosebridge = document.getElementById("bridges");
+            let color = hairElements["hairColor"];
+            if (faceSelect.value == "nose" && nosebridge.value != ""){
+                value = `${value} ${nosebridge.value}`;
+            }
+            if(["nose", "eyebrows", "lips", "chin"].includes(faceSelect.value) &&
+                modbox.value != "") {
+                value = `${modbox.value} ${value}`;
+            }
+            if (faceSelect.value == "eyebrows" && (color != "" && color != undefined)){
+                color = color.substring(0, color.length - 5);
+                value = `${color} ${value}`;
+            }
+            features[faceSelect.value] = value;
+        }
+        else {
+            let bodySelect = document.getElementById("bodyFeature");
+            features[bodySelect.value] = value;
+        }
+        setFeatureText(pTextObj, features);
+    }
+
+    function setToolTip(type, value) {
+        let feature = "";
+        if (type == "none") {
+            document.getElementById("toolTip").textContent = "";
+            return;
+        }
+        if (type == "facial") {
+            feature = document.getElementById("facialFeature");
+        }
+        else {
+            feature = document.getElementById("bodyFeature");
+        }
+        let dVar = eval(`${feature.value}Vt`);
+        result = dVar.find(item => item.value == value);
+        if (result.hasOwnProperty("toolTip")) {
+            document.getElementById("toolTip").textContent = result.toolTip;
+        }
+        else {
+            document.getElementById("toolTip").textContent = "";
+        }
+    }
+
+    function setFeatureTypeWithMod(modifier){
+        let faceSelect = document.getElementById("facialFeature");
+        let feature = document.getElementById("facialFeatureType");
+        let color = hairElements["hairColor"];
+        switch(faceSelect.value){
+            default :
+                break;
+            case "lips":
+            case "chin":
+            case "eyebrows":
+                let value = `${modifier} ${feature.value}`;
+                if (faceSelect.value == "eyebrows" && (color != "" && color != undefined)){
+                    color = color.substring(0, color.length - 5);
+                    value = `${color} ${value}`;
+                }
+                features[faceSelect.value] = value;
+                // add tool tip
+                break;
+            case "nose":
+                let mod = document.getElementById("modifiers");
+                let nosebridge = document.getElementById("bridges")
+                features[faceSelect.value] = `${mod.value} ${feature.value} ${nosebridge.value}`;
+                break;
+        }
+        setFeatureText(pTextObj, features);
+    }
+
+    //#endregion
+
+
+    //#endregion
+
+    //#region page setup
+
+    function setupSelects() {
+        populateSelect("Skin Tone", skinColorObj, skinColorVt);
+        populateSelect("Eye Color", eyeColorObj, eyeColorVt);
+        populateSelect("Age", ageObj, ageVt);
+        populateSelect("Glasses", glassesObj, glassesVt);
+        populateSelect("Freckles", frecklesObj, frecklesVt);
+        populateSelect("Facial Hair", facialHairObj, facialHairVt);
+        populateSelect("Facial Features", facialFeatureObj, faceFeatsVt);
+        populateSelect("Body Features", bodyFeatureObj, bodyFeatsVt);
+        populateSelect("Hair", hairObj, hairVt);
+        populateSelect("Bridge", bridgesObj, noseBridgeVt);
+        populateSelect("Ethnicity", ethnicityObj, ethnicityVt);
+    }
+
+    //#endregion
+
+    setupSelects();
+</script>
+</html>
