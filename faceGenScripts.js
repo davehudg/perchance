@@ -26,6 +26,27 @@ function changeGender(gender, facialHair) {
         return copy;
     }
 
+    async function writeFileToDisk(arrayOfFeatures) {
+        const fileHandle = await window.showSaveFilePicker();
+        const fileStream = await fileHandle.createWritable();
+        await fileStream.write(new Blob([JSON.stringify(arrayOfFeatures)], {type: "text/plain"}));
+        await fileStream.close();
+    }
+
+    async function readFileFromDisk(file, arrayOfFeatures, preset) {
+        let fileContent = await file.text();
+        let dump = new Array();
+        dump.push(JSON.parse(fileContent));
+        arrayOfFeatures = dump[0];
+
+        listFeatures.forEach(featureSet =>{
+            let item = document.createElement("option");
+            item.value=featureSet.name;
+            item.text=featureSet.name;
+            presetObj.appendChild(item);
+        });
+    }
+
 //#endregion
 
 //#region Random
@@ -152,6 +173,23 @@ function changeGender(gender, facialHair) {
                 return;
         }
         mods.style.display = "inline";
+    }
+
+    
+    function addToArray(presetName, preset, arrayOfFeatures, feats, pText){
+        if(presetName.value == ""){
+            presetName.style.background="yellow";
+            return;
+        }
+
+        feats["name"] = presetName.value;
+        let item = document.createElement("option");
+        item.value=presetName.value;
+        item.text=presetName.value;
+        preset.appendChild(item);
+        arrayOfFeatures.push(deepCopyObject(feats));
+        reset(pText, feats);
+        presetName.value = "";
     }
 
 //#endregion

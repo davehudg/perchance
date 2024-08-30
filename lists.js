@@ -1,3 +1,9 @@
+const prompt = [`I want you to describe the physical appearance of a person using the following attributes: "name", "gender", "hairColor", "hairStyle", "eyeColor", "skinColor", "freckles" 
+    - in terms of none, some on the bridge of their nose, light body freckles, a lot of body freckles, "age" - in terms of stage of life Child, Pre-Teen, Teenager, Young Adult, "faceShape", "faceLength", "hairline",
+    "eyebrows", "browRidge", "eyeShape", "eyeSet", "nose", "cheekBones", "lips", "chin", "bodyType", "muscularity", "bodyComposition", "height" - in terms of relation to the general population small, 
+    average, tall, very tall "bustSize" - if female, in terms of relation to their body proportions flat, small, proportional, large, huge. The output of the attributes should be in a list as 
+    follows: attributeName: attribute description. attribute names should appear as they are listed. Each attribute should be on it's own line. No descriptions should contain flowery language, and should be succinct and matter of fact.`];
+
 var faceShapeVt = [{ value: "", text: "", toolTip: "" }, { value: "flat face", text: "Flat Face", toolTip: "A face shape with minimal angles, a broad forehead, and a softly rounded jawline, creating a generally uniform appearance." },
     { value: "oval shaped face", text: "Oval Shaped Face", toolTip: "An elegant, balanced face with a gently curving jawline and forehead, slightly narrower than the cheekbones." },
     { value: "round shaped face", text: "Round Shaped Face", toolTip: "Full cheeks and a face that is equally wide at the cheekbones and jaw, with a soft, rounded jawline and forehead." },

@@ -54,14 +54,14 @@
             <option value="">Choose a preset</option>
         </select>
         <input id="presetName" type="text" />
-        <button id="add" onclick="addToArray()">Add To Array</button>
+        <button id="add" onclick="addToArray(presetNameObj, presetObj, listFeatures, features, pTextObj)">Add To Array</button>
         <button id="save" onclick="writeFileToDisk(listFeatures)">Save Features</button>
     </div>
 
     <!-- <button class="accordion">Ai Generated description</button> -->
     <div> <!-- <div class="panel"> -->
         <textarea id="instructionEl" placeholder="Type the name of someone famous" cols="40" rows="1"></textarea><br>
-        <button id="generateBtn" onclick="genDescriptionOutput()">Generate Description</button>
+        <button id="generateBtn" onclick="genDescriptionOutput(aiFaceObj, responseElObj, loaderElObj)">Generate Description</button>
         <button id="something" onclick="parseOutput()">Parse Output</button>
         <div id="loaderEl"></div>
         <textarea id="responseEl" cols="55" rows="20" style="display: none;""></textarea>
@@ -86,13 +86,14 @@
         lips: "", chin: "", bodyType: "", bodyComp: "", muscularity: "", height: "", bustSize: "", bodyHairColor: "", eyeBrowColor: ""
     };
 
-    const listFeatures = new Array;
+    var listFeatures = new Array;
 
     var hairElements = { hairColor: "", hairStyle: "", highlights: "" };
 
     //#endregion
 
-    //#region
+    //#region Element obj's
+
     const genderObj = document.getElementById("gender");
     const eyeColorObj = document.getElementById("eyeColor");
     const skinColorObj = document.getElementById("skinColor");
@@ -149,47 +150,10 @@
         });
     }
 
-    async function writeFileToDisk(arrayOfFeatures) {
-        const fileHandle = await window.showSaveFilePicker();
-        const fileStream = await fileHandle.createWritable();
-        await fileStream.write(new Blob([JSON.stringify(arrayOfFeatures)], {type: "text/plain"}));
-        await fileStream.close();
-    }
-
-    async function readFileFromDisk() {
-        const [fileHandle] = await window.showOpenFilePicker();
-        const file = await fileHandle.getFile();
-        const fileContent = await file.text();
-        listFeatures.push(JSON.parse(fileContent));
-
-        listFeatures.forEach(featureSet =>{
-            let item = document.createElement("option");
-            item.value=featureSet.name;
-            item.text=featureSet.name;
-            presetObj.appendChild(item);
-        });
-    }
-
-    function addToArray(){
-        if(presetNameObj.value == ""){
-            presetNameObj.style.background="yellow";
-            return;
-        }
-
-        features["name"] = presetNameObj.value;
-        let item = document.createElement("option");
-        item.value=presetNameObj.value;
-        item.text=presetNameObj.value;
-        presetObj.appendChild(item);
-        listFeatures.push(deepCopyObject(features));
-        reset(pTextObj, features);
-        presetNameObj.value = "";
-    }
-
     document.getElementById('fileInput').addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file) {
-            readFileFromDisk(file);
+            readFileFromDisk(file, listFeatures, presetObj);
         }
     });
 
@@ -243,19 +207,7 @@
 
     //#region AI feature generation
 
-    const prompt = [`I want you to describe the physical appearance of a person using the following attributes: "name", "gender", "hairColor", "hairStyle", "eyeColor", "skinColor", "freckles" 
-        - in terms of none, some on the bridge of their nose, light body freckles, a lot of body freckles, "age" - in terms of stage of life Child, Pre-Teen, Teenager, Young Adult, "faceShape", "faceLength", "hairline",
-        "eyebrows", "browRidge", "eyeShape", "eyeSet", "nose", "cheekBones", "lips", "chin", "bodyType", "muscularity", "bodyComposition", "height" - in terms of relation to the general population small, 
-        average, tall, very tall "bustSize" - if female, in terms of relation to their body proportions flat, small, proportional, large, huge. The output of the attributes should be in a list as 
-        follows: attributeName: attribute description. attribute names should appear as they are listed. Each attribute should be on it's own line. No descriptions should contain flowery language, and should be succinct and matter of fact.`];
-
-
-    function genDescriptionOutput(){
-        aiFaceObj.style.display = "none";
-        responseElObj.style.display = "inline-block";
-        loaderElObj.innerHTML=output.evaluateItem;
-    }
-
+   
     function parseOutput() {
         let textDump = document.getElementById("responseEl");
         let text = textDump.value;
@@ -326,10 +278,6 @@
 
         update();
     }
-
-    Object.prototype.hasOwnPropertyCI = function (prop) {
-        return Object.keys(this).some(key => key.toLowerCase() === prop.toLowerCase());
-    };
 
     //#endregion
 
