@@ -39,7 +39,7 @@ function changeGender(gender, facialHair) {
         dump.push(JSON.parse(fileContent));
         arrayOfFeatures = dump[0];
 
-        listFeatures.forEach(featureSet =>{
+        arrayOfFeatures.forEach(featureSet =>{
             let item = document.createElement("option");
             item.value=featureSet.name;
             item.text=featureSet.name;
