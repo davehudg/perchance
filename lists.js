@@ -146,7 +146,7 @@ const maleHairStyles = [{ value: "comb over", text: "Comb Over" }, { value: "qui
     { value: "side part with short hair", text: "Side Part With Short Hair" }, { value: "ivy league haircut", text: "Ivy League Haircut" },
     { value: "fade", text: "Fade" }, { value: "slicked back", text: "Slicked Back" }, { value: "textured crop", text: "Textured Crop" }];
 const femaleHairStyles = [{ value: "pixie cut", text: "Pixie Cut" }, { value: "textured pixie cut", text: "Textured Pixie Cut" }, 
-    { value: "undercut", text: "Undercut" }, { value: "buzz cut", text: "Buzz Cut" }, { value: "spiky short hair", text: "Spiky Short Hair" }, 
+    { value: "undercut", text: "Undercut" }, { value: "crew cut", text: "Crew Cut" }, { value: "buzz cut", text: "Buzz Cut" }, { value: "spiky short hair", text: "Spiky Short Hair" }, 
     { value: "layered bob", text: "Layered Bob" }, { value: "tousled short hair", text: "Tousled Short Hair" }, { value: "short braids", text: "Short Braids" },
     { value: "shoulder-length layers", text: "Shoulder-Length Layers" }, { value: "medium curly hair", text: "Medium Curly Hair" }, { value: "wavy medium hair", text: "Wavy Medium Hair" },
     { value: "dutch braids", text: "Dutch Braids" }, { value: "french braids", text: "French Braids" }, { value: "straight long hair", text: "Straight Long Hair" },
