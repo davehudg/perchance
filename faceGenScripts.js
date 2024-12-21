@@ -1,7 +1,7 @@
 //#region Misc functions
 
 function changeGender(gender, facialHair) {
-        if (gender.value == "(male:1.2)") {
+        if (gender.value == "male") {
             facialHair.style.display = "inline";
         }
         else {
@@ -26,27 +26,6 @@ function changeGender(gender, facialHair) {
         return copy;
     }
 
-    async function writeFileToDisk(arrayOfFeatures) {
-        const fileHandle = await window.showSaveFilePicker();
-        const fileStream = await fileHandle.createWritable();
-        await fileStream.write(new Blob([JSON.stringify(arrayOfFeatures)], {type: "text/plain"}));
-        await fileStream.close();
-    }
-
-    async function readFileFromDisk(file, arrayOfFeatures, preset) {
-        let fileContent = await file.text();
-        let dump = new Array();
-        dump.push(JSON.parse(fileContent));
-        arrayOfFeatures = dump[0];
-
-        arrayOfFeatures.forEach(featureSet =>{
-            let item = document.createElement("option");
-            item.value=featureSet.name;
-            item.text=featureSet.name;
-            presetObj.appendChild(item);
-        });
-    }
-
 //#endregion
 
 //#region Random
@@ -67,12 +46,6 @@ function changeGender(gender, facialHair) {
 //#endregion
 
 //#region AI feature generation
-
-    function genDescriptionOutput(aiFace, responseEl, loaderEl){
-        aiFace.style.display = "none";
-        responseEl.style.display = "inline-block";
-        loaderEl.innerHTML=output.evaluateItem;
-    }
 
 //#endregion
 

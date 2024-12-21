@@ -18,7 +18,7 @@
         <div>
             <select id="gender" onchange="changeGender(genderObj, facialHairObj)">
                 <option value="">Gender</option>
-                <option value="(male:1.2)">Male</option>
+                <option value="male">Male</option>
                 <option value="female">Female</option>
             </select>
             <select id="ethnicity"></select>
@@ -157,6 +157,27 @@
         }
     });
 
+    async function writeFileToDisk(arrayOfFeatures) {
+        const fileHandle = await window.showSaveFilePicker();
+        const fileStream = await fileHandle.createWritable();
+        await fileStream.write(new Blob([JSON.stringify(arrayOfFeatures)], {type: "text/plain"}));
+        await fileStream.close();
+    }
+
+    async function readFileFromDisk(file, arrayOfFeatures, preset) {
+        let fileContent = await file.text();
+        let dump = new Array();
+        dump.push(JSON.parse(fileContent));
+        arrayOfFeatures = dump[0];
+
+        arrayOfFeatures.forEach(featureSet =>{
+            let item = document.createElement("option");
+            item.value=featureSet.name;
+            item.text=featureSet.name;
+            presetObj.appendChild(item);
+        });
+    }
+
     function updateImages(){
         picsObj.style.display = "inline";
         update();
@@ -206,8 +227,13 @@
     
 
     //#region AI feature generation
-
    
+    function genDescriptionOutput(aiFace, responseEl, loaderEl){
+        aiFace.style.display = "none";
+        responseEl.style.display = "inline-block";
+        loaderEl.innerHTML=output.evaluateItem;
+    }
+
     function parseOutput() {
         let textDump = document.getElementById("responseEl");
         let text = textDump.value;

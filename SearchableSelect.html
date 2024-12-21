@@ -1,0 +1,203 @@
+<html>
+
+<head>
+
+</head>
+<style>
+#custom-select-container {
+    position: relative;
+    width: 300px;
+}
+
+#search-input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.dropdown-list {
+    position: absolute;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 10;
+}
+
+.dropdown-list .dropdown-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-list .dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-list .dropdown-item.black {
+    color: black;
+}
+
+.dropdown-list .dropdown-item.gray {
+    color: lightgray;
+}
+
+.dropdown-list .dropdown-item .details {
+    font-size: 12px;
+    color: gray;
+}
+
+.dropdown-list hr {
+    margin: 5px 0;
+    border: none;
+    border-top: 1px solid #ccc;
+}
+
+.dropdown-list.show {
+    display: block;
+}
+
+</style>
+
+<body>
+
+    <div id="custom-select-container">
+        <input type="text" id="search-input" placeholder="Search..." oninput="handleSearch(this.value)" />
+        <div id="dropdown-list" class="dropdown-list">
+            <!-- Dynamically generated options will be inserted here -->
+        </div>
+    </div>
+    
+
+</body>
+<script>
+
+    const customers = [
+        { id: 1, name: "John Smith", isActive: true, accountNumber: "ACC12345", customerNumber: "CUST001", contact: "john.smith@example.com" },
+        { id: 2, name: "Jane Doe", isActive: false, accountNumber: "ACC12346", customerNumber: "CUST002", contact: "jane.doe@example.com" },
+        { id: 3, name: "Michael Johnson", isActive: true, accountNumber: "ACC12347", customerNumber: "CUST003", contact: "michael.johnson@example.com" },
+        { id: 4, name: "Jessica Smith", isActive: true, accountNumber: "ACC12348", customerNumber: "CUST004", contact: "jessica.smith@example.com" },
+        { id: 5, name: "Emily Davis", isActive: false, accountNumber: "ACC12349", customerNumber: "CUST005", contact: "emily.davis@example.com" },
+        { id: 6, name: "John Doe", isActive: false, accountNumber: "ACC12350", customerNumber: "CUST006", contact: "john.doe@example.com" },
+        { id: 7, name: "Jessica Jones", isActive: true, accountNumber: "ACC12351", customerNumber: "CUST007", contact: "jessica.jones@example.com" },
+        { id: 8, name: "Mike Smith", isActive: false, accountNumber: "ACC12352", customerNumber: "CUST008", contact: "mike.smith@example.com" },
+        { id: 9, name: "Michael Williams", isActive: true, accountNumber: "ACC12353", customerNumber: "CUST009", contact: "michael.williams@example.com" },
+        { id: 10, name: "Jane Johnson", isActive: true, accountNumber: "ACC12354", customerNumber: "CUST010", contact: "jane.johnson@example.com" },
+        { id: 11, name: "Emily Smith", isActive: false, accountNumber: "ACC12355", customerNumber: "CUST011", contact: "emily.smith@example.com" },
+        { id: 12, name: "John Williams", isActive: true, accountNumber: "ACC12356", customerNumber: "CUST012", contact: "john.williams@example.com" },
+        { id: 13, name: "Jessica Brown", isActive: false, accountNumber: "ACC12357", customerNumber: "CUST013", contact: "jessica.brown@example.com" },
+        { id: 14, name: "Emily Johnson", isActive: true, accountNumber: "ACC12358", customerNumber: "CUST014", contact: "emily.johnson@example.com" },
+        { id: 15, name: "Michael Brown", isActive: false, accountNumber: "ACC12359", customerNumber: "CUST015", contact: "michael.brown@example.com" },
+        { id: 16, name: "John Brown", isActive: true, accountNumber: "ACC12360", customerNumber: "CUST016", contact: "john.brown@example.com" },
+        { id: 17, name: "Jane Williams", isActive: false, accountNumber: "ACC12361", customerNumber: "CUST017", contact: "jane.williams@example.com" },
+        { id: 18, name: "Jessica Davis", isActive: true, accountNumber: "ACC12362", customerNumber: "CUST018", contact: "jessica.davis@example.com" },
+        { id: 19, name: "Mike Johnson", isActive: false, accountNumber: "ACC12363", customerNumber: "CUST019", contact: "mike.johnson@example.com" },
+        { id: 20, name: "Emily Brown", isActive: true, accountNumber: "ACC12364", customerNumber: "CUST020", contact: "emily.brown@example.com" },
+        { id: 21, name: "John Davis", isActive: false, accountNumber: "ACC12365", customerNumber: "CUST021", contact: "john.davis@example.com" },
+        { id: 22, name: "Jane Smith", isActive: true, accountNumber: "ACC12366", customerNumber: "CUST022", contact: "jane.smith@example.com" },
+        { id: 23, name: "Michael Davis", isActive: false, accountNumber: "ACC12367", customerNumber: "CUST023", contact: "michael.davis@example.com" },
+        { id: 24, name: "Jessica Johnson", isActive: true, accountNumber: "ACC12368", customerNumber: "CUST024", contact: "jessica.johnson@example.com" },
+        { id: 25, name: "Emily Williams", isActive: false, accountNumber: "ACC12369", customerNumber: "CUST025", contact: "emily.williams@example.com" },
+        { id: 26, name: "John Jones", isActive: true, accountNumber: "ACC12370", customerNumber: "CUST026", contact: "john.jones@example.com" },
+        { id: 27, name: "Jane Brown", isActive: false, accountNumber: "ACC12371", customerNumber: "CUST027", contact: "jane.brown@example.com" },
+        { id: 28, name: "Michael Smith", isActive: true, accountNumber: "ACC12372", customerNumber: "CUST028", contact: "michael.smith@example.com" },
+        { id: 29, name: "Jessica Williams", isActive: false, accountNumber: "ACC12373", customerNumber: "CUST029", contact: "jessica.williams@example.com" },
+        { id: 30, name: "Emily Jones", isActive: true, accountNumber: "ACC12374", customerNumber: "CUST030", contact: "emily.jones@example.com" },
+        { id: 31, name: "John Johnson", isActive: false, accountNumber: "ACC12375", customerNumber: "CUST031", contact: "john.johnson@example.com" },
+        { id: 32, name: "Jane Davis", isActive: true, accountNumber: "ACC12376", customerNumber: "CUST032", contact: "jane.davis@example.com" },
+        { id: 33, name: "Michael Jones", isActive: false, accountNumber: "ACC12377", customerNumber: "CUST033", contact: "michael.jones@example.com" },
+        { id: 34, name: "Jessica Brown", isActive: true, accountNumber: "ACC12378", customerNumber: "CUST034", contact: "jessica.brown@example.com" },
+        { id: 35, name: "Emily Smith", isActive: false, accountNumber: "ACC12379", customerNumber: "CUST035", contact: "emily.smith@example.com" },
+        { id: 36, name: "John Johnson", isActive: true, accountNumber: "ACC12380", customerNumber: "CUST036", contact: "john.johnson2@example.com" },
+        { id: 37, name: "Jane Smith", isActive: false, accountNumber: "ACC12381", customerNumber: "CUST037", contact: "jane.smith2@example.com" },
+        { id: 38, name: "Michael Davis", isActive: true, accountNumber: "ACC12382", customerNumber: "CUST038", contact: "michael.davis2@example.com" },
+        { id: 39, name: "Jessica Johnson", isActive: false, accountNumber: "ACC12383", customerNumber: "CUST039", contact: "jessica.johnson2@example.com" },
+        { id: 40, name: "Emily Brown", isActive: true, accountNumber: "ACC12384", customerNumber: "CUST040", contact: "emily.brown2@example.com" },
+        { id: 41, name: "John Smith", isActive: false, accountNumber: "ACC12385", customerNumber: "CUST041", contact: "john.smith2@example.com" },
+        { id: 42, name: "Jane Williams", isActive: true, accountNumber: "ACC12386", customerNumber: "CUST042", contact: "jane.williams2@example.com" },
+        { id: 43, name: "Michael Johnson", isActive: false, accountNumber: "ACC12387", customerNumber: "CUST043", contact: "michael.johnson2@example.com" },
+        { id: 44, name: "Jessica Davis", isActive: true, accountNumber: "ACC12388", customerNumber: "CUST044", contact: "jessica.davis2@example.com" },
+        { id: 45, name: "Emily Davis", isActive: false, accountNumber: "ACC12389", customerNumber: "CUST045", contact: "emily.davis2@example.com" },
+        { id: 46, name: "John Williams", isActive: true, accountNumber: "ACC12390", customerNumber: "CUST046", contact: "john.williams2@example.com" },
+        { id: 47, name: "Jane Brown", isActive: false, accountNumber: "ACC12391", customerNumber: "CUST047", contact: "jane.brown2@example.com" },
+        { id: 48, name: "Michael Brown", isActive: true, accountNumber: "ACC12392", customerNumber: "CUST048", contact: "michael.brown2@example.com" },
+        { id: 49, name: "Jessica Jones", isActive: false, accountNumber: "ACC12393", customerNumber: "CUST049", contact: "jessica.jones2@example.com" }
+    ];
+
+
+function handleSearch(query) {
+    const dropdownList = document.getElementById('dropdown-list');
+    dropdownList.innerHTML = '';
+
+    if (query.length < 2) {
+        dropdownList.classList.remove('show');
+        return;
+    }
+
+    const lowerQuery = query.toLowerCase();
+
+    // Perform the search across multiple fields
+    const results = customers.filter(customer =>
+        customer.name.toLowerCase().includes(lowerQuery) ||
+        customer.accountNumber.toLowerCase().includes(lowerQuery) ||
+        customer.customerNumber.toLowerCase().includes(lowerQuery) ||
+        customer.contact.toLowerCase().includes(lowerQuery)
+    );
+
+    // Sort the results alphabetically by name
+    results.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Separate active and inactive customers
+    const activeCustomers = results.filter(customer => customer.isActive);
+    const inactiveCustomers = results.filter(customer => !customer.isActive);
+
+    // Populate dropdown list with sorted results
+    activeCustomers.forEach(customer => {
+        const item = createDropdownItem(customer, 'black');
+        dropdownList.appendChild(item);
+    });
+
+    if (inactiveCustomers.length > 0) {
+        const hr = document.createElement('hr');
+        dropdownList.appendChild(hr);
+    }
+
+    inactiveCustomers.forEach(customer => {
+        const item = createDropdownItem(customer, 'gray');
+        dropdownList.appendChild(item);
+    });
+
+    dropdownList.classList.add('show');
+}
+
+
+function createDropdownItem(option, textColor) {
+    const item = document.createElement('div');
+    item.classList.add('dropdown-item', textColor);
+    item.id = option.id;
+
+    const nameLine = document.createElement('div');
+    nameLine.textContent = option.name;
+
+    const detailsLine = document.createElement('div');
+    detailsLine.classList.add('details');
+    detailsLine.textContent = `Acct #: ${option.accountNumber} Customer #: ${option.customerNumber}, Email: ${option.contact}`;
+
+    item.appendChild(nameLine);
+    item.appendChild(detailsLine);
+
+    item.addEventListener('click', () => {
+        document.getElementById('search-input').value = option.name;
+        document.getElementById('dropdown-list').classList.remove('show');
+    });
+
+    return item;
+}
+
+
+</script>
+
+</html>
