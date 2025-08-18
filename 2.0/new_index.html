@@ -3,7 +3,7 @@
 <header>
     <!-- DEV -->
     <!-- <script src="../lists.js"></script> -->
-    <script src="../faceGenScripts.js"></script>
+    <!-- <script src="../faceGenScripts.js"></script> -->
 
     <!-- PROD -->
     <!-- <script src="https://davehudg.github.io/perchance/lists.js"></script>
@@ -17,6 +17,7 @@
 
 <body ng-controller="PersonContorller as personList">
     <h1>Person Generator</h1>
+
     <div>
         <div>
             <div>
@@ -29,9 +30,8 @@
             <br />
 
             <select ng-options="x.value as x.text for x in ethnicity" ng-model="person.Ethnicity">
-                <option value="">Ethnicity</option>
+                <option value=""></option>
             </select>
-
             <select ng-options="x.value as x.text for x in gender" ng-model="person.Gender"
                 ng-if="person.Ethnicity != undefined">
                 <option value="">Gender</option>
@@ -53,50 +53,32 @@
             </select>
             <br>
 
-            <select ng-options="x.value as x.text for x in glasses" ng-model="person.Glasses"
-                ng-if="person.Ethnicity != undefined">
-                <option value="">Glasses</option>
-            </select>
-            <select ng-options="x.value as x.text for x in eyeColor" ng-model="person.EyeColor"
-                ng-if="person.Ethnicity != undefined">
-                <option value="">Eye Color</option>
-            </select>
-            <br>
 
-            <select ng-options="x as x.text for x in hairColor" ng-model="hair.hairColor" ng-click="GetHairStyle()"
-                ng-if="person.Ethnicity != undefined">
-                <option value="">Hair Color</option>
-            </select>
-            <select ng-options="x as x.text for x in maleHairStyles" ng-model="hair.hairStyle"
-                ng-if="person.Gender && person.Gender == 'male'">
-                <option value="">Male Hair</option>
-            </select>
-            <select ng-options="x.value as x.text for x in facialHair" ng-model="hair.facialHair"
-                ng-if="person.Gender == 'male'">
-                <option value="">Facial Hair</option>
-            </select>
-            <select ng-options="x as x.text for x in femaleHairStyles" ng-model="hair.hairStyle"
-                ng-click="GetHairStyle()" ng-if="person.Gender && person.Gender != 'male'">
-                <option value="">Female Hair</option>
-            </select>
-            <br>
-            <select multiple ng-options="x as x.text for x in hairMods" ng-model="hair.hairMods"
-                ng-click="GetHairStyle()">
-            </select>
-            <br>
 
-            <select ng-options="x.value as x.text for x in clothing" ng-model="person.Clothing">
-                <option value="">Clothing</option>
-            </select>
-        </div>
 
-        <br>
-        <!-- <div>
-            Hair Style: {{ features.hairStyle }}
-        </div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 </body>
-
 </html>

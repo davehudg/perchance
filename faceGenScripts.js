@@ -67,7 +67,7 @@ function changeGender(gender, facialHair) {
         hairEls[hairSelect.value] = feature;
         let nonEmptyEnteries = Object.entries(hairEls).filter(([key, value]) => value !== "" && value !== null);
         let nonEmptyValues = nonEmptyEnteries.map(([key, value]) => value)
-        let result = nonEmptyValues.join(" ");
+        let result = nonEmptyValues.join(" "); 
         allFeatures["hair"] = result;
         setFeatureText(pText, allFeatures);
     }

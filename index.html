@@ -6,17 +6,23 @@
     -->
 <head>
     <title>[pageTitle]</title>
-    <script src="https://davehudg.github.io/perchance/lists.js"></script>
-    <script src="https://davehudg.github.io/perchance/faceGenScripts.js"></script>
+    <script src="../lists.js"></script>
+    <script src="../faceGenScripts.js"></script>
+    
+    <!-- PROD -->
+    <!-- <script src="https://davehudg.github.io/perchance/lists.js"></script>
+    <script src="https://davehudg.github.io/perchance/faceGenScripts.js"></script> -->
     <link rel="stylesheet" type="text/css" href="https://davehudg.github.io/perchance/page.css" />
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
 </head>
-<body>
+<body ng-app="myapp" ng-controller="myctrl">
     <h1>[pageTitle]</h1>
     <!--<button class="accordion">Selection & Generation</button> -->
     <div> <!-- <div class="panel"> -->
         <div>
-            <select id="gender" onchange="changeGender(genderObj, facialHairObj)">
+            <select id="gender" 
+            ng-model="features.gender"
+            onchange="changeGender(genderObj, facialHairObj)">
                 <option value="">Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -30,6 +36,7 @@
             <select id="facialHair" style="display: none;"></select>
             <select id="hair"></select>
             <select id="hairType"></select>
+            <select id="clothing"></select>
         </div>
 
         <select id="facialFeature"></select>
@@ -48,8 +55,8 @@
         <textarea id="pText" name="pText" cols="55" rows="10">mannequin</textarea>
     </div>
     <div>
-        <input type="file" id="fileInput">
-        <pre id="fileContent"></pre>
+        <!-- <input type="file" id="fileInput">
+        <pre id="fileContent"></pre> -->
         <select id="preset">
             <option value="">Choose a preset</option>
         </select>
@@ -81,9 +88,39 @@
 <script>
     //#region variables
     var features = {
-        name: "", gender: "", ethnicity: "", hair: "", eyeColor: "", skinColor: "", hasGlasses: "", freckles: "", age: "", facialHair: "", faceShape: "", 
-        faceLength: "", hairline: "", forehead: "", eyebrows: "", browRidge: "", eyeShape: "", eyeSet: "", nose: "", cheekBones: "", 
-        lips: "", chin: "", bodyType: "", bodyComp: "", muscularity: "", height: "", bustSize: "", bodyHairColor: "", eyeBrowColor: ""
+        name: "",
+        age: "",
+        gender: "",
+        ethnicity: "",
+        eyeColor: "",
+        skinColor: "",
+        hasGlasses: "",
+        freckles: "",
+
+        hair: "",
+        bodyHairColor: "",
+        eyeBrowColor: "",
+        facialHair: "",
+
+        faceShape: "",
+        faceLength: "",
+        hairline: "",
+        forehead: "",
+        eyebrows: "",
+        browRidge: "",
+        eyeShape: "",
+        eyeSet: "",
+        nose: "",
+        cheekBones: "",
+        lips: "",
+        chin: "",
+
+        bodyType: "",
+        bodyComp: "",
+        muscularity: "",
+        bustSize: "",
+        height: "",
+        clothing: ""
     };
 
     var listFeatures = new Array;
@@ -126,6 +163,7 @@
     const saveObj = document.getElementById("save");
     const presetNameObj = document.getElementById("presetName");
     const presetObj = document.getElementById("preset");
+    const clothingObj = document.getElementById("clothing");
 
     var acc = document.getElementsByClassName("accordion");
 
@@ -478,6 +516,7 @@
         populateSelect("Hair", hairObj, hairVt);
         populateSelect("Bridge", bridgesObj, noseBridgeVt);
         populateSelect("Ethnicity", ethnicityObj, ethnicityVt);
+        populateSelect("Clothing", clothingObj, clothingVt);
     }
 
     //#endregion
