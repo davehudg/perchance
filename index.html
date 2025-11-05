@@ -6,17 +6,23 @@
     -->
 <head>
     <title>[pageTitle]</title>
-    <script src="https://davehudg.github.io/perchance/lists.js"></script>
-    <script src="https://davehudg.github.io/perchance/faceGenScripts.js"></script>
+    <script src="../lists.js"></script>
+    <script src="../faceGenScripts.js"></script>
+    
+    <!-- PROD -->
+    <!-- <script src="https://davehudg.github.io/perchance/lists.js"></script>
+    <script src="https://davehudg.github.io/perchance/faceGenScripts.js"></script> -->
     <link rel="stylesheet" type="text/css" href="https://davehudg.github.io/perchance/page.css" />
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
 </head>
-<body>
+<body ng-app="myapp" ng-controller="myctrl">
     <h1>[pageTitle]</h1>
     <!--<button class="accordion">Selection & Generation</button> -->
     <div> <!-- <div class="panel"> -->
         <div>
-            <select id="gender" onchange="changeGender(genderObj, facialHairObj)">
+            <select id="gender" 
+            ng-model="features.gender"
+            onchange="changeGender(genderObj, facialHairObj)">
                 <option value="">Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -30,6 +36,7 @@
             <select id="facialHair" style="display: none;"></select>
             <select id="hair"></select>
             <select id="hairType"></select>
+            <select id="clothing"></select>
         </div>
 
         <select id="facialFeature"></select>
@@ -48,14 +55,14 @@
         <textarea id="pText" name="pText" cols="55" rows="10">mannequin</textarea>
     </div>
     <div>
-        <input type="file" id="fileInput">
-        <pre id="fileContent"></pre>
+        <!-- <input type="file" id="fileInput">
+        <pre id="fileContent"></pre> -->
         <select id="preset">
             <option value="">Choose a preset</option>
         </select>
         <input id="presetName" type="text" />
         <button id="add" onclick="addToArray(presetNameObj, presetObj, listFeatures, features, pTextObj)">Add To Array</button>
-        <button id="save" onclick="writeFileToDisk(listFeatures)">Save Features</button>
+        <button id="save" onclick="savePresets(listFeatures)">Save Features</button>
     </div>
 
     <!-- <button class="accordion">Ai Generated description</button> -->
@@ -80,11 +87,57 @@
 </body>
 <script>
     //#region variables
-    var features = {
-        name: "", gender: "", ethnicity: "", hair: "", eyeColor: "", skinColor: "", hasGlasses: "", freckles: "", age: "", facialHair: "", faceShape: "", 
-        faceLength: "", hairline: "", forehead: "", eyebrows: "", browRidge: "", eyeShape: "", eyeSet: "", nose: "", cheekBones: "", 
-        lips: "", chin: "", bodyType: "", bodyComp: "", muscularity: "", height: "", bustSize: "", bodyHairColor: "", eyeBrowColor: ""
-    };
+// --- value table directory (stable lookups, no eval) ---
+const VALUE_TABLES = {
+  // top-level selectors
+  gender: genderVt,
+  ethnicity: ethnicityVt,
+  eyeColor: eyeColorVt,
+  skinColor: skinColorVt,
+  age: ageVt,
+  facialHair: facialHairVt,
+  glasses: glassesVt,
+
+  // compound face/body feature groups
+  faceShape: faceShapeVt,
+  faceLength: faceLengthVt,
+  hairline: hairlineVt,
+  forehead: foreheadVt,
+  eyebrows: eyebrowsVt,
+  browRidge: browRidgeVt,
+  eyeShape: eyeShapeVt,
+  eyeSet: eyeSetVt,
+  nose: noseVt,
+  cheekBones: cheekBonesVt,
+  lips: lipsVt,
+  chin: chinVt,
+  jawline: jawlineVt,
+
+  // modifiers
+  eyebrowMod: eyebrowModVt,
+  noseMod: noseModVt,
+  noseBridge: noseBridgeVt,
+  lipMod: lipModVt,
+
+  // hair groupings
+  hair: hairVt,
+  hairColor: hairColorVt,
+  highlights: highlightVt,
+  hairStyleMale: maleHairStyles,
+  hairStyleFemale: femaleHairStyles,
+
+  // body traits
+  bodyType: bodyTypeVt,
+  bodyComp: bodyCompVt,
+  muscularity: muscularityVt,
+  height: heightVt,
+  bustSize: bustSizeVt,
+
+  // extras
+  ears: earsVt,
+  clothing: clothingVt
+};
+
 
     var listFeatures = new Array;
 
@@ -126,6 +179,7 @@
     const saveObj = document.getElementById("save");
     const presetNameObj = document.getElementById("presetName");
     const presetObj = document.getElementById("preset");
+    const clothingObj = document.getElementById("clothing");
 
     var acc = document.getElementsByClassName("accordion");
 
@@ -150,6 +204,22 @@
         });
     }
 
+function persistSelections() {
+  try {
+    if (window.features) localStorage.setItem(FBG.storageKey, JSON.stringify(window.features));
+  } catch {}
+}
+function hydrateSelections() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(FBG.storageKey) || 'null');
+    if (saved && window.features) {
+      Object.assign(window.features, saved);
+      // optional: call your existing UI setters to refresh labels
+      // setFeatureText(pTextEl, window.features);
+    }
+  } catch {}
+}
+
     document.getElementById('fileInput').addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file) {
@@ -157,12 +227,35 @@
         }
     });
 
-    async function writeFileToDisk(arrayOfFeatures) {
-        const fileHandle = await window.showSaveFilePicker();
-        const fileStream = await fileHandle.createWritable();
-        await fileStream.write(new Blob([JSON.stringify(arrayOfFeatures)], {type: "text/plain"}));
-        await fileStream.close();
-    }
+async function savePresets(arrayOfFeatures) {
+  const payload = JSON.stringify(arrayOfFeatures, null, 2);
+  if (window.showSaveFilePicker) {
+    const fh = await window.showSaveFilePicker({ suggestedName: 'features.json', types: [{ description:'JSON', accept:{ 'application/json': ['.json'] } }] });
+    const ws = await fh.createWritable(); await ws.write(payload); await ws.close();
+  } else {
+    const blob = new Blob([payload], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'features.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+}
+
+function loadPresetsFromFile(inputEl, onLoaded) {
+  const file = inputEl?.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (typeof onLoaded === 'function') onLoaded(data);
+    } catch (e) { console.error('Invalid JSON', e); }
+  };
+  reader.readAsText(file);
+}
+
 
     async function readFileFromDisk(file, arrayOfFeatures, preset) {
         let fileContent = await file.text();
@@ -281,7 +374,8 @@
             }
             if (features.hasOwnProperty(key)) {
                 console.log("has feature", key);
-                let dArr = eval(`${key}Vt`);
+                let dArr = VALUE_TABLES[item.value] || [];
+
                 let val = match.groups.val.toLowerCase();
                 let idx = dArr.findIndex(obj => obj.value.includes(val))
                 if (idx > -1) {
@@ -408,6 +502,7 @@
             features[bodySelect.value] = value;
         }
         setFeatureText(pTextObj, features);
+        persistSelections();
     }
 
     function setToolTip(type, value) {
@@ -430,6 +525,7 @@
         else {
             document.getElementById("toolTip").textContent = "";
         }
+        persistSelections()
     }
 
     function setFeatureTypeWithMod(modifier){
@@ -457,6 +553,7 @@
                 break;
         }
         setFeatureText(pTextObj, features);
+        persistSelections()
     }
 
     //#endregion
@@ -478,10 +575,67 @@
         populateSelect("Hair", hairObj, hairVt);
         populateSelect("Bridge", bridgesObj, noseBridgeVt);
         populateSelect("Ethnicity", ethnicityObj, ethnicityVt);
+        populateSelect("Clothing", clothingObj, clothingVt);
     }
 
     //#endregion
 
     setupSelects();
 </script>
+<script>
+/**
+ * Inline Handler Migrator
+ * Converts inline handlers (onclick="...") to addEventListener listeners.
+ * Safe to run multiple times; no-ops if nothing to migrate.
+ * Note: This keeps behavior 1:1, including reliance on global functions/variables.
+ */
+(function migrateInlineHandlers(){
+  const ATTRS = [
+    ['onclick',      'click'],
+    ['onchange',     'change'],
+    ['oninput',      'input'],
+    ['onsubmit',     'submit'],
+    ['onfocus',      'focus'],
+    ['onblur',       'blur'],
+    ['onmouseover',  'mouseover'],
+    ['onmouseout',   'mouseout'],
+    ['onkeydown',    'keydown'],
+    ['onkeyup',      'keyup']
+  ];
+
+  // use a tree-walk that tolerates dynamic nodes
+  const root = document;
+  for (const [attr, evt] of ATTRS) {
+    // a static NodeList is fine; we remove attributes after binding
+    const nodes = root.querySelectorAll('[' + attr + ']');
+    for (const el of nodes) {
+      const code = el.getAttribute(attr);
+      if (!code) continue;
+
+      // Create a function with `event` param, bound `this` = element
+      // Using Function here reproduces inline-script semantics
+      let fn;
+      try {
+        fn = new Function('event', code);
+      } catch (e) {
+        console.error('[migrateInlineHandlers] Could not compile', attr, 'on', el, e);
+        continue;
+      }
+
+      // For submit, prevent default if inline code returns false (matches old behavior)
+      const handler = function(e){
+        const result = fn.call(el, e);
+        if (evt === 'submit' && result === false) {
+          e.preventDefault();
+        }
+        return result;
+      };
+
+      el.addEventListener(evt, handler, false);
+      el.removeAttribute(attr);
+    }
+  }
+})();
+</script>
+
 </html>

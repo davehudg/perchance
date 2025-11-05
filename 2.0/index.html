@@ -1,11 +1,72 @@
-<html>
+<!doctype html>
+<html ng-app="personApp">
     <header>
+        <!-- DEV -->
+        <!-- <script src="../lists.js"></script> -->
+        <script src="../faceGenScripts.js"></script>
+        
+        <!-- PROD -->
+        <!-- <script src="https://davehudg.github.io/perchance/lists.js"></script>
+        <script src="https://davehudg.github.io/perchance/faceGenScripts.js"></script> -->
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+        <!-- <script type="text/javascript" src="angularjs-dropdown-multiselect.js"></script> -->
         <script src="person.js"></script>
         <link rel="stylesheet" type="text/css" href="https://davehudg.github.io/perchance/page.css" />
     </header>
-    <body ng-app="newApp" controller="personCtl">
-        <h1>Hello World</h1>
-        <p ng-model="Person">Hi, my name is {{ name }}</p>
+    <body ng-controller="PersonContorller as personList">
+    <h1>Person Generator</h1>
+    <div>
+        <div>
+
+            <select ng-options="x.value as x.text for x in gender"ng-model="features.gender"><option value="">Gender</option></select>
+            <select ng-options="x.value as x.text for x in age" ng-model="features.age"><option value="">Age</option></select>
+            <br>
+
+            <select ng-options="x.value as x.text for x in ethnicity" ng-model="features.ethnicity"><option value="">Ethnicity</option></select>
+            <select ng-options="x.value as x.text for x in skinColor" ng-model="features.skinColor"><option value="">Skin Color</option></select>
+            <select ng-options="x.value as x.text for x in freckles" ng-model="features.freckles"><option value="">Freckles</option></select>
+            <br>
+
+            <select ng-options="x.value as x.text for x in glasses" ng-model="features.glasses"><option value="">Glasses</option></select>
+            <select ng-options="x.value as x.text for x in eyeColor" ng-model="features.eyeColor"><option value="">Eye Color</option></select>
+            <br>
+
+            <select ng-options="x as x.text for x in hairColor" 
+                ng-model="hair.hairColor" ng-click="GetHairStyle()">
+                <option value="">Hair Color</option>
+            </select>
+            <select ng-options="x as x.text for x in maleHairStyles" ng-model="hair.hairStyle" 
+                ng-if="features.gender && features.gender == 'male'">
+                <option value="">Male Hair</option>
+            </select>
+            <select ng-options="x.value as x.text for x in facialHair" ng-model="hair.facialHair" 
+                ng-if="features.gender == 'male'">
+                <option value="">Facial Hair</option>
+            </select>
+            <select ng-options="x as x.text for x in femaleHairStyles" 
+                ng-model="hair.hairStyle" ng-click="GetHairStyle()"
+                ng-if="features.gender && features.gender != 'male'">
+                <option value="">Female Hair</option>
+            </select>
+            <br>
+            <select multiple ng-options="x as x.text for x in hairMods" 
+                ng-model="hair.hairMods" ng-click="GetHairStyle()">
+            </select>
+            <br>
+
+            <select ng-options="x.value as x.text for x in clothing" ng-model="features.clothing"><option value="">Clothing</option></select>
+        </div>
+
+        <div>
+            Name: {{ features.name }}
+            <br>
+            features: {{features}}
+        </div>
+        <br>
+        <div>
+            Hair Style: {{ features.hairStyle }}
+        </div>
+    
+    </div>
     </body>
 </html>
