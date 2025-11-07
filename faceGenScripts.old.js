@@ -10,39 +10,39 @@ function changeGender(gender, facialHair) {
   }
 }
 
-    
-    function deepCopyArray(arr) {
-        return arr.map(item => Array.isArray(item) ? deepCopyArray(item) : 
-            (item && typeof item === 'object') ? deepCopyObject(item) : item);
-    }
 
-    function deepCopyObject(obj) {
-        const copy = {};
-        for (let key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                copy[key] = (obj[key] && typeof obj[key] === 'object') ? 
-                    (Array.isArray(obj[key]) ? deepCopyArray(obj[key]) : deepCopyObject(obj[key])) : obj[key];
-            }
-        }
-        return copy;
+function deepCopyArray(arr) {
+  return arr.map(item => Array.isArray(item) ? deepCopyArray(item) :
+    (item && typeof item === 'object') ? deepCopyObject(item) : item);
+}
+
+function deepCopyObject(obj) {
+  const copy = {};
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      copy[key] = (obj[key] && typeof obj[key] === 'object') ?
+        (Array.isArray(obj[key]) ? deepCopyArray(obj[key]) : deepCopyObject(obj[key])) : obj[key];
     }
+  }
+  return copy;
+}
 
 //#endregion
 
 //#region Random
 
-    function reset(pText, allFeatures) {
-        let temp = Object.entries(allFeatures).filter(([key, value]) => key);
-        temp.forEach(item => {
-            console.log(item[0]);
-            allFeatures[item[0]] = "";
-        });
-        setFeatureText(pText, allFeatures);
-    }
+function reset(pText, allFeatures) {
+  let temp = Object.entries(allFeatures).filter(([key, value]) => key);
+  temp.forEach(item => {
+    console.log(item[0]);
+    allFeatures[item[0]] = "";
+  });
+  setFeatureText(pText, allFeatures);
+}
 
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min)) + min;
-    }
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
 
 //#endregion
 
@@ -75,140 +75,122 @@ function buildImagePrompt({ kind, features, baseTags = [], extraTags = [], negat
 
 //#region Set functions
 
-    function setFeatureText(Obj, allFeatures) {
-        let nonEmptyEnteries = Object.entries(allFeatures).filter(([key, value]) => value !== "" && value !== null);
-        let nonEmptyValues = nonEmptyEnteries.map(([key, value]) => value)
-        let result = nonEmptyValues.join(", ");
-        Obj.innerHTML = result;
-    }
+function setFeatureText(Obj, allFeatures) {
+  let nonEmptyEnteries = Object.entries(allFeatures).filter(([key, value]) => value !== "" && value !== null);
+  let nonEmptyValues = nonEmptyEnteries.map(([key, value]) => value)
+  let result = nonEmptyValues.join(", ");
+  Obj.innerHTML = result;
+}
 
-    function setFeature(featureType, selectedIndex, allFeatures, pText) {
-        allFeatures[featureType] = selectedIndex;
-        setFeatureText(pText, allFeatures);
-        persistSelections();
-    }
+function setFeature(featureType, selectedIndex, allFeatures, pText) {
+  allFeatures[featureType] = selectedIndex;
+  setFeatureText(pText, allFeatures);
+  persistSelections();
+}
 
-    function setHairElement(feature, hairSelect, hairEls, allFeatures, pText) {
-        hairEls[hairSelect.value] = feature;
-        let nonEmptyEnteries = Object.entries(hairEls).filter(([key, value]) => value !== "" && value !== null);
-        let nonEmptyValues = nonEmptyEnteries.map(([key, value]) => value)
-        let result = nonEmptyValues.join(" "); 
-        allFeatures["hair"] = result;
-        setFeatureText(pText, allFeatures);
-        persistSelections();
-    }
+function setHairElement(feature, hairSelect, hairEls, allFeatures, pText) {
+  hairEls[hairSelect.value] = feature;
+  let nonEmptyEnteries = Object.entries(hairEls).filter(([key, value]) => value !== "" && value !== null);
+  let nonEmptyValues = nonEmptyEnteries.map(([key, value]) => value)
+  let result = nonEmptyValues.join(" ");
+  allFeatures["hair"] = result;
+  setFeatureText(pText, allFeatures);
+  persistSelections();
+}
 
 //#endregion
 
 //#region Populate functions
 
-    function populateSelect(header, selectItem, list) {
-        selectItem.innerHTML = "";
-        let newHeader = document.createElement("option");
-        newHeader.textContent = header;
-        newHeader.value = "";
-        selectItem.appendChild(newHeader);
-        list.forEach((item, index) => {
-            // create new element
-            let newOption = document.createElement("option");
-            // set new element properties
-            newOption.value = item.value;
-            newOption.textContent = item.text;
-            // add new element to recieving element
-            selectItem.appendChild(newOption);
-        });
-    }
-
-    function populateHair(feature, hairType, gender, hColorList, hlList, mHair, fHair) {
-  hairType.innerHTML = "";
-  let feat = [];
-  switch (feature) {
-    case "hairColor": feat = hColorList; break;
-    case "highlights": feat = hlList; break;
-    case "hairStyle":
-      feat = (gender.value === "male") ? mHair : fHair;
-      break;
-    default: feat = [];
-  }
-  feat.forEach(type => {
-    const option = document.createElement("option");
-    option.value = type.value;
-    option.textContent = type.text;
-    hairType.appendChild(option);
+function populateSelect(header, selectItem, list) {
+  selectItem.innerHTML = "";
+  let newHeader = document.createElement("option");
+  newHeader.textContent = header;
+  newHeader.value = "";
+  selectItem.appendChild(newHeader);
+  list.forEach((item, index) => {
+    // create new element
+    let newOption = document.createElement("option");
+    // set new element properties
+    newOption.value = item.value;
+    newOption.textContent = item.text;
+    // add new element to recieving element
+    selectItem.appendChild(newOption);
   });
 }
 
-    // function populateHair(feature, hairType, gender, hColorList, hlList, mHair, fHair) {
-    //     hairType.innerHTML = "";
-    //     var feat = [];
-    //     switch (feature) {
-    //         case "hairColor":
-    //             feat = hColorList;
-    //             break;
-    //         case "highlights":
-    //             feat = hlList;
-    //             break;
-    //         case "hairStyle":
-    //             if (gender.value == "(male:1.2)") {
-    //                 feat = mHair;
-    //                 isMale = true;
-    //             }
-    //             else {
-    //                 feat = fHair;
-    //                 isMale = true;
-    //             }
-    //             break;
-    //     }
-    //     feat.forEach((type, index) => {
-    //         let option = document.createElement("option");
-    //         option.value = type.value;
-    //         option.textContent = type.text;
-    //         hairType.appendChild(option);
-    //     });
-    // }
 
-    function populateModifier(group, bridge, mods, ebrowList, noseList, lipList, jawList){
-        switch(group){
-            case "eyebrows":
-                populateSelect("Eyebrow Modifiers", mods, ebrowList)
-                bridge.style.display = "none";
-                break;
-            case "nose":
-                populateSelect("Nose Modifiers", mods, noseList)
-                bridge.style.display = "inline";
-                break;
-            case "lips":
-                populateSelect("Lip Modifiers", mods, lipList)
-                bridge.style.display = "none";
-                break;
-            case "chin":
-                populateSelect("Jawlines", mods, jawList)
-                bridge.style.display = "none";
-                break;
-            default: 
-                mods.style.display = "none";
-                bridge.style.display = "none";
-                return;
-        }
-        mods.style.display = "inline";
-    }
+function populateHair(feature, hairType, gender, hColorList, hlList, mHair, fHair) {
+  if (!hairType) return;
+  hairType.innerHTML = '';
+  const key = normalizeHairKey(feature);
 
-    
-    function addToArray(presetName, preset, arrayOfFeatures, feats, pText){
-        if(presetName.value == ""){
-            presetName.style.background="yellow";
-            return;
-        }
+  let list = [];
+  if (key === 'hairColor') list = hColorList || [];
+  else if (key === 'highlights') list = hlList || [];
+  else if (key === 'hairStyle') list = (gender && gender.value === 'male') ? (mHair || []) : (fHair || []);
+  else list = []; // unknown key
 
-        feats["name"] = presetName.value;
-        let item = document.createElement("option");
-        item.value=presetName.value;
-        item.text=presetName.value;
-        preset.appendChild(item);
-        arrayOfFeatures.push(deepCopyObject(feats));
-        reset(pText, feats);
-        presetName.value = "";
-    }
+  // header
+  const hdr = document.createElement('option');
+  hdr.value = ''; hdr.textContent = 'Choose...';
+  hairType.appendChild(hdr);
+
+  // options
+  list.forEach(item => {
+    const op = document.createElement('option');
+    op.value = item.value;
+    op.textContent = item.text;
+    hairType.appendChild(op);
+  });
+
+  // clear the previously chosen value in hairType on category switch
+  hairType.value = '';
+}
+
+
+function populateModifier(group, bridge, mods, ebrowList, noseList, lipList, jawList) {
+  switch (group) {
+    case "eyebrows":
+      populateSelect("Eyebrow Modifiers", mods, ebrowList)
+      bridge.style.display = "none";
+      break;
+    case "nose":
+      populateSelect("Nose Modifiers", mods, noseList)
+      bridge.style.display = "inline";
+      break;
+    case "lips":
+      populateSelect("Lip Modifiers", mods, lipList)
+      bridge.style.display = "none";
+      break;
+    case "chin":
+      populateSelect("Jawlines", mods, jawList)
+      bridge.style.display = "none";
+      break;
+    default:
+      mods.style.display = "none";
+      bridge.style.display = "none";
+      return;
+  }
+  mods.style.display = "inline";
+}
+
+
+function addToArray(presetName, preset, arrayOfFeatures, feats, pText) {
+  if (presetName.value == "") {
+    presetName.style.background = "yellow";
+    return;
+  }
+
+  feats["name"] = presetName.value;
+  let item = document.createElement("option");
+  item.value = presetName.value;
+  item.text = presetName.value;
+  preset.appendChild(item);
+  arrayOfFeatures.push(deepCopyObject(feats));
+  reset(pText, feats);
+  presetName.value = "";
+}
 
 //#endregion
 
@@ -224,7 +206,7 @@ window.FBG = window.FBG || {
 };
 
 function initFBG() {
-  try { hydrateSelections(); } catch {}
+  try { hydrateSelections(); } catch { }
   // Example: wire buttons once (IDs from your HTML)
   const genBtn = document.getElementById('gen');
   const randBtn = document.getElementById('random');

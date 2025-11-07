@@ -1,34 +1,22 @@
 <html>
-<!-- 8/26 2024 PM -->
-<!-- TODO
-    Save and load settings
-    make desc hidden when running ai mode
-    -->
+
 <head>
     <title>[pageTitle]</title>
-    <script src="../lists.js"></script>
-    <script src="../faceGenScripts.js"></script>
-    
+
     <!-- PROD -->
-    <!-- <script src="https://davehudg.github.io/perchance/lists.js"></script>
-    <script src="https://davehudg.github.io/perchance/faceGenScripts.js"></script> -->
-    <script src="../lists.js"></script>
-    <script src="../faceGenScripts.js"></script>
-    
-    <!-- PROD -->
-    <!-- <script src="https://davehudg.github.io/perchance/lists.js"></script>
-    <script src="https://davehudg.github.io/perchance/faceGenScripts.js"></script> -->
+    <script src="https://davehudg.github.io/perchance/lists.js"></script>
+    <!-- IMPORTANT: do NOT load the old faceGenScripts here; we define functions inline below -->
+    <script src="https://davehudg.github.io/perchance/faceGenScripts.js"></script>
     <link rel="stylesheet" type="text/css" href="https://davehudg.github.io/perchance/page.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
 </head>
+
 <body ng-app="myapp" ng-controller="myctrl">
     <h1>[pageTitle]</h1>
-    <!--<button class="accordion">Selection & Generation</button> -->
-    <div> <!-- <div class="panel"> -->
+
+    <div>
         <div>
-            <select id="gender" 
-            ng-model="features.gender"
-            onchange="changeGender(genderObj, facialHairObj)">
+            <select id="gender" ng-model="features.gender" onchange="changeGender(genderObj, facialHairObj)">
                 <option value="">Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -60,99 +48,108 @@
         <br>
         <textarea id="pText" name="pText" cols="55" rows="10">mannequin</textarea>
     </div>
+
     <div>
         <!-- <input type="file" id="fileInput">
-        <pre id="fileContent"></pre> -->
+    <pre id="fileContent"></pre> -->
         <select id="preset">
             <option value="">Choose a preset</option>
         </select>
         <input id="presetName" type="text" />
-        <button id="add" onclick="addToArray(presetNameObj, presetObj, listFeatures, features, pTextObj)">Add To Array</button>
+        <button id="add" onclick="addToArray(presetNameObj, presetObj, listFeatures, features, pTextObj)">Add To
+            Array</button>
         <button id="save" onclick="savePresets(listFeatures)">Save Features</button>
     </div>
 
-    <!-- <button class="accordion">Ai Generated description</button> -->
-    <div> <!-- <div class="panel"> -->
+    <div>
         <textarea id="instructionEl" placeholder="Type the name of someone famous" cols="40" rows="1"></textarea><br>
-        <button id="generateBtn" onclick="genDescriptionOutput(aiFaceObj, responseElObj, loaderElObj)">Generate Description</button>
+        <button id="generateBtn" onclick="genDescriptionOutput(aiFaceObj, responseElObj, loaderElObj)">Generate
+            Description</button>
         <button id="something" onclick="parseOutput()">Parse Output</button>
         <div id="loaderEl"></div>
-        <textarea id="responseEl" cols="55" rows="20" style="display: none;""></textarea>
+        <textarea id="responseEl" cols="55" rows="20" style="display: none;"></textarea>
         <textarea id="pName" hidden>mannequin</textarea>
     </div>
+
     <br>
     <div id="pics" style="display: none;">
-        <a id="aiFace" style="display: none;"">[outputName]</a>
+        <a id="aiFace" style="display: none;">[outputName]</a>
         [outputFace]
         [outputFace]
         <br>
         [outputBody]
         [outputBody]
     </div>
-    </div>
 </body>
+
 <script>
-    //#region variables
-// --- value table directory (stable lookups, no eval) ---
-const VALUE_TABLES = {
-  // top-level selectors
-  gender: genderVt,
-  ethnicity: ethnicityVt,
-  eyeColor: eyeColorVt,
-  skinColor: skinColorVt,
-  age: ageVt,
-  facialHair: facialHairVt,
-  glasses: glassesVt,
+    //#region Stable lookups (no eval) + minimal config
 
-  // compound face/body feature groups
-  faceShape: faceShapeVt,
-  faceLength: faceLengthVt,
-  hairline: hairlineVt,
-  forehead: foreheadVt,
-  eyebrows: eyebrowsVt,
-  browRidge: browRidgeVt,
-  eyeShape: eyeShapeVt,
-  eyeSet: eyeSetVt,
-  nose: noseVt,
-  cheekBones: cheekBonesVt,
-  lips: lipsVt,
-  chin: chinVt,
-  jawline: jawlineVt,
+    window.FBG = window.FBG || { storageKey: 'fbg:last' };
 
-  // modifiers
-  eyebrowMod: eyebrowModVt,
-  noseMod: noseModVt,
-  noseBridge: noseBridgeVt,
-  lipMod: lipModVt,
+    const VALUE_TABLES = {
+        gender: genderVt,
+        ethnicity: ethnicityVt,
+        eyeColor: eyeColorVt,
+        skinColor: skinColorVt,
+        age: ageVt,
+        facialHair: facialHairVt,
+        glasses: glassesVt,
 
-  // hair groupings
-  hair: hairVt,
-  hairColor: hairColorVt,
-  highlights: highlightVt,
-  hairStyleMale: maleHairStyles,
-  hairStyleFemale: femaleHairStyles,
+        faceShape: faceShapeVt,
+        faceLength: faceLengthVt,
+        hairline: hairlineVt,
+        forehead: foreheadVt,
+        eyebrows: eyebrowsVt,
+        browRidge: browRidgeVt,
+        eyeShape: eyeShapeVt,
+        eyeSet: eyeSetVt,
+        nose: noseVt,
+        cheekBones: cheekBonesVt,
+        lips: lipsVt,
+        chin: chinVt,
+        jawline: jawlineVt,
 
-  // body traits
-  bodyType: bodyTypeVt,
-  bodyComp: bodyCompVt,
-  muscularity: muscularityVt,
-  height: heightVt,
-  bustSize: bustSizeVt,
+        eyebrowMod: eyebrowModVt,
+        noseMod: noseModVt,
+        noseBridge: noseBridgeVt,
+        lipMod: lipModVt,
 
-  // extras
-  ears: earsVt,
-  clothing: clothingVt
-};
+        hair: hairVt,
+        hairColor: hairColorVt,
+        highlights: highlightVt,
+        hairStyleMale: maleHairStyles,
+        hairStyleFemale: femaleHairStyles,
 
+        bodyType: bodyTypeVt,
+        bodyComp: bodyCompVt,
+        muscularity: muscularityVt,
+        height: heightVt,
+        bustSize: bustSizeVt,
 
-    var listFeatures = new Array;
-
-    var hairElements = { hairColor: "", hairStyle: "", highlights: "" };
+        ears: earsVt,
+        clothing: clothingVt
+    };
 
     //#endregion
 
-    //#region Element obj's
+    //#region State + element refs
 
+    // Core feature state (so non-facial/body selectors have somewhere to write)
+    var features = {
+        name: "",
+        gender: "", ethnicity: "", eyeColor: "", skinColor: "", age: "", glasses: "", freckles: "", facialHair: "",
+        hair: "", hairColor: "", highlights: "",
+        faceShape: "", faceLength: "", hairline: "", forehead: "", eyebrows: "", browRidge: "", eyeShape: "", eyeSet: "",
+        nose: "", cheekBones: "", lips: "", chin: "", jawline: "",
+        ears: "", clothing: "",
+        bodyType: "", bodyComp: "", muscularity: "", height: "", bustSize: ""
+    };
+
+    var listFeatures = [];
+    var hairElements = { hairColor: "", highlights: "", hairStyle: "" };
+
+    // DOM refs
     const genderObj = document.getElementById("gender");
     const eyeColorObj = document.getElementById("eyeColor");
     const skinColorObj = document.getElementById("skinColor");
@@ -187,387 +184,319 @@ const VALUE_TABLES = {
     const presetObj = document.getElementById("preset");
     const clothingObj = document.getElementById("clothing");
 
-    var acc = document.getElementsByClassName("accordion");
+    //#endregion
+
+    //#region Utilities
+
+    function changeGender(gender, facialHair) {
+        if (!gender || !facialHair) return;
+        if (gender.value === "male") facialHair.style.display = "inline";
+        else { facialHair.value = ""; facialHair.style.display = "none"; }
+    }
+
+    function deepCopyArray(arr) {
+        return arr.map(item => Array.isArray(item) ? deepCopyArray(item) :
+            (item && typeof item === 'object') ? deepCopyObject(item) : item);
+    }
+    function deepCopyObject(obj) {
+        const copy = {};
+        for (const [k, v] of Object.entries(obj)) {
+            if (Array.isArray(v)) copy[k] = deepCopyArray(v);
+            else if (v && typeof v === 'object') copy[k] = deepCopyObject(v);
+            else copy[k] = v;
+        }
+        return copy;
+    }
+    function setFeatureText(el, feats) {
+        const vals = Object.entries(feats).filter(([k, v]) => v && k !== 'name').map(([k, v]) => v);
+        el.textContent = vals.join(", ");
+    }
+    function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
+    function persistSelections() { try { localStorage.setItem(FBG.storageKey, JSON.stringify(features)); } catch { } }
+    function hydrateSelections() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(FBG.storageKey) || 'null');
+            if (saved) { Object.assign(features, saved); setFeatureText(pTextObj, features); }
+        } catch { }
+    }
+    try { hydrateSelections(); } catch { }
 
     //#endregion
 
-    //#region Misc
-    var i;
+    //#region Presets
 
-    for (i = 0; i < acc.length; i++) {
-        acc[i].addEventListener("click", function () {
-            /* Toggle between adding and removing the "active" class,
-            to highlight the button that controls the panel */
-            this.classList.toggle("active");
+    function addToArray(presetNameInput, presetSelect, arrayOfFeatures, feats, pText) {
+        const name = (presetNameInput.value || "").trim();
+        if (!name) { presetNameInput.style.background = "yellow"; return; }
+        if (arrayOfFeatures.some(x => x.name === name)) { presetNameInput.style.background = "yellow"; return; }
+        const copy = deepCopyObject(feats);
+        copy.name = name;
+        arrayOfFeatures.push(copy);
 
-            /* Toggle between hiding and showing the active panel */
-            var panel = this.nextElementSibling;
-            if (panel.style.display === "block") {
-                panel.style.display = "none";
+        const opt = document.createElement("option");
+        opt.value = name; opt.textContent = name;
+        presetSelect.appendChild(opt);
+
+        // Clear UI text but keep current working selections
+        presetNameInput.value = "";
+        setFeatureText(pText, feats);
+        persistSelections();
+    }
+
+    async function savePresets(arrayOfFeatures) {
+        const payload = JSON.stringify(arrayOfFeatures || [], null, 2);
+        try {
+            if (window.showSaveFilePicker) {
+                const fh = await window.showSaveFilePicker({
+                    suggestedName: 'features.json',
+                    types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }]
+                });
+                const ws = await fh.createWritable(); await ws.write(payload); await ws.close();
             } else {
-                panel.style.display = "block";
+                const blob = new Blob([payload], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'features.json';
+                document.body.appendChild(a); a.click(); a.remove();
             }
-        });
-    }
-
-function persistSelections() {
-  try {
-    if (window.features) localStorage.setItem(FBG.storageKey, JSON.stringify(window.features));
-  } catch {}
-}
-function hydrateSelections() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(FBG.storageKey) || 'null');
-    if (saved && window.features) {
-      Object.assign(window.features, saved);
-      // optional: call your existing UI setters to refresh labels
-      // setFeatureText(pTextEl, window.features);
-    }
-  } catch {}
-}
-
-    document.getElementById('fileInput').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            readFileFromDisk(file, listFeatures, presetObj);
-        }
-    });
-
-async function savePresets(arrayOfFeatures) {
-  const payload = JSON.stringify(arrayOfFeatures, null, 2);
-  if (window.showSaveFilePicker) {
-    const fh = await window.showSaveFilePicker({ suggestedName: 'features.json', types: [{ description:'JSON', accept:{ 'application/json': ['.json'] } }] });
-    const ws = await fh.createWritable(); await ws.write(payload); await ws.close();
-  } else {
-    const blob = new Blob([payload], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'features.json';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
-}
-
-function loadPresetsFromFile(inputEl, onLoaded) {
-  const file = inputEl?.files?.[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const data = JSON.parse(reader.result);
-      if (typeof onLoaded === 'function') onLoaded(data);
-    } catch (e) { console.error('Invalid JSON', e); }
-  };
-  reader.readAsText(file);
-}
-
-
-    async function readFileFromDisk(file, arrayOfFeatures, preset) {
-        let fileContent = await file.text();
-        let dump = new Array();
-        dump.push(JSON.parse(fileContent));
-        arrayOfFeatures = dump[0];
-
-        arrayOfFeatures.forEach(featureSet =>{
-            let item = document.createElement("option");
-            item.value=featureSet.name;
-            item.text=featureSet.name;
-            presetObj.appendChild(item);
-        });
-    }
-
-    function updateImages(){
-        picsObj.style.display = "inline";
-        update();
+        } catch (e) { console.error(e); }
     }
 
     //#endregion
 
-    //#region Random
+    //#region Hair handling (compose features.hair properly)
 
-    function genRandomFeatures() {
-        features["gender"] = ["(male:1.2)", "female"][getRandomInt(0, 2)];
-        features["eyeColor"] = eyeColorVt[getRandomInt(0, eyeColorVt.length)].value;
-        features["skinColor"] = skinColorVt[getRandomInt(0, skinColorVt.length)].value;
-        features["age"] = ageVt[7].value;
-        //features["hasGlasses"] = glassesVt[getRandomInt(0, glassesVt.length)].value;
-        features["freckles"] = frecklesVt[getRandomInt(0, frecklesVt.length)].value;
-        let hair = hairColorVt[getRandomInt(1, hairColorVt.length)].value;
-        if (features["gender"] == "(male:1.2)") {
-            features["facialHair"] = facialHairVt[getRandomInt(0, facialHairVt.length)].value;
-            features["hair"] = hair + " " + maleHairStyles[getRandomInt(0, maleHairStyles.length)].value;
-            // + " " + highlightVt[getRandomInt(0, highlightVt.length)].value;
+    function setHairElement(selectedValue, hairSelect, hairEl, feats, pText) {
+        // Which subfield are we setting?
+        switch ((hairSelect && hairSelect.value) || "") {
+            case "hairColor": hairEl.hairColor = selectedValue || ""; break;
+            case "highlights": hairEl.highlights = selectedValue || ""; break;
+            case "hairStyle": hairEl.hairStyle = selectedValue || ""; break;
+            default: break;
         }
-        else {
-            features["facialHair"] = "";
-            features["hair"] = hair + " " + femaleHairStyles[getRandomInt(0, femaleHairStyles.length)].value;
-            // + " " + highlightVt[getRandomInt(0, highlightVt.length)].value;
-        }
-        faceFeatsVt.forEach(item => {
-            let dArr = eval(`${item.value}Vt`);
-            let numItems = dArr.length;
-            features[item.value] = dArr[getRandomInt(1, numItems)].value;
-        });
-        bodyFeatsVt.forEach(item => {
-            let dArr = eval(`${item.value}Vt`);
-            let numItems = dArr.length;
-            features[item.value] = dArr[getRandomInt(1, numItems)].value;
-        });
-        if (features["gender"] == "(male:1.2)") {
-            features["bustSize"] = "";
-        }
-        setFeatureText(pTextObj, features);
-        picsObj.style.display = "inline";
-        update();
-    }
-
-    //#endregion
-    
-
-    //#region AI feature generation
-   
-    function genDescriptionOutput(aiFace, responseEl, loaderEl){
-        aiFace.style.display = "none";
-        responseEl.style.display = "inline-block";
-        loaderEl.innerHTML=output.evaluateItem;
-    }
-
-    function parseOutput() {
-        let textDump = document.getElementById("responseEl");
-        let text = textDump.value;
-        let pattern = /- (?<key>[\w\s]+): (?<val>[^\n]+)/gi;
-        for (const match of text.matchAll(pattern)) {
-            console.log("parse loop started");
-            let key = match.groups.key;
-            let nout = document.getElementById("pName");
-            if (key == "name") {
-                nout.innerHTML = match.groups.val;
-                console.log("name set");
-                console.log(nout.textContent);
-                continue;
-            }
-            if (key == "age") {
-                nout.innerHTML = nout.innerHTML + ", " + match.groups.val;
-                console.log(nout.textContent);
-                continue;
-            }
-            if (key.includes("hair")) {
-                console.log("entered hair");
-                if (key.includes("color")) {
-                    let val = match.groups.val.toLowerCase();
-                    let idx = hairColorVt.findIndex(obj => obj.value.includes(val))
-                    if (hidx > -1) {
-                        console.log(hairColorVt[idx].value);
-                        features["hairColor"] = hairColorVt[idx].value;;
-                        features["eyebrowColor"] = hairColorVt[idx].value;;
-                        features["bodyHairColor"] = hairColorVt[idx].value;;
-                    }
-                    else {
-                        console.log(match.groups.val);
-                        features["hairColor"] = match.groups.val;
-                        features["eyebrowColor"] = match.groups.val;
-                        features["bodyHairColor"] = match.groups.val;
-                    }
-                    continue;
-                }
-                else {
-                    console.log(match.groups.val);
-                    features["hair"] = features["hair"] + " " + match.groups.val;;
-                    console.log(features["hair"]);
-                    continue;
-                }
-            }
-            if (features.hasOwnProperty(key)) {
-                console.log("has feature", key);
-                let dArr = VALUE_TABLES[item.value] || [];
-
-                let val = match.groups.val.toLowerCase();
-                let idx = dArr.findIndex(obj => obj.value.includes(val))
-                if (idx > -1) {
-                    features[key] = dArr[idx].value;
-                    console.log(features[key]);
-                }
-                else {
-                    features[key] = val + " " + key;
-                    console.log(features[key]);
-                }
-            }
-            else{
-                console.log("no property", match.groups.val);
-            }
-        }
-        setFeatureText(pTextObj, features);
-        document.getElementById("responseEl").style.display = "none";
-        document.getElementById("aiFace").style.display = "inline";
-        picsObj.style.display = "inline";
-
-        update();
+        // Build the hair string
+        const parts = [hairEl.hairColor, hairEl.highlights, hairEl.hairStyle].filter(Boolean);
+        feats.hair = parts.join(" ");
+        setFeatureText(pTextObj, feats);
+        persistSelections();
     }
 
     //#endregion
 
-    //#region Form interaction functions
+    //#region Populate + tooltips
 
-    document.querySelectorAll("select").forEach(select => {
-        select.addEventListener("change", function () {
-            switch (this.id) {
-                case "facialFeature":
-                    populateFaceFeature(this.value);
-                    populateModifier(this.value, bridgesObj, modifiersObj, eyebrowModVt, noseModVt, lipModVt, jawlineVt);
-                    setToolTip("none", this.value);
-                    break;
-                case "facialFeatureType":
-                    setFeatureType("facial", this.value);
-                    setToolTip("facial", this.value);
-                    break;
-                case "bodyFeature":
-                    populateBodyFeature(this.value);
-                    setToolTip("none", this.value);
-                    break;
-                case "bodyFeatureType":
-                    setFeatureType("body", this.value);
-                    setToolTip("body", this.value);
-                    break;
-                case "hair":
-                    populateHair(this.value, hairTypeObj, genderObj, hairColorVt, highlightVt, maleHairStyles, femaleHairStyles);
-                    setToolTip("none", this.value);
-                    break;
-                case "hairType":
-                    setHairElement(this.value, hairObj, hairElements, features, pTextObj);
-                    setToolTip("none", this.value);
-                    break;
-                case "modifiers":
-                case "bridges":
-                    setFeatureTypeWithMod(this.value);
-                    break;
-                case "preset":
-                    features = JSON.parse(JSON.stringify(listFeatures.filter(x => x.name == this.value)));
-                    features[0].name = "";
-                    setFeatureText(pTextObj, features[0]);
-                    break;
-                default:
-                    setFeature(this.id.split('FeatureType')[0], this.value, features, pTextObj);
-                    setToolTip("none", this.value);
-                    break;
-            }
+    function populateSelect(header, selectItem, list) {
+        selectItem.innerHTML = "";
+        const hdr = document.createElement("option");
+        hdr.textContent = header; hdr.value = "";
+        selectItem.appendChild(hdr);
+        list.forEach(item => {
+            const op = document.createElement("option");
+            op.value = item.value; op.textContent = item.text;
+            selectItem.appendChild(op);
         });
-    });
+    }
 
-    //#region populate functions - fills selects
+    function populateModifier(group, bridge, mods, ebrowList, noseList, lipList, jawList) {
+        switch (group) {
+            case "eyebrows": populateSelect("Eyebrow Modifiers", mods, ebrowList); bridge.style.display = "none"; break;
+            case "nose": populateSelect("Nose Modifiers", mods, noseList); bridge.style.display = "inline"; break;
+            case "lips": populateSelect("Lip Modifiers", mods, lipList); bridge.style.display = "none"; break;
+            case "chin": populateSelect("Jawlines", mods, jawList); bridge.style.display = "none"; break;
+            default: mods.style.display = "none"; bridge.style.display = "none"; return;
+        }
+        mods.style.display = "inline";
+    }
 
     function populateFaceFeature(feature) {
-        let faceFeatSelect = document.getElementById("facialFeatureType");
-        faceFeatSelect.innerHTML = "";
-        let dVar = eval(`${feature}Vt`);
-        dVar.forEach((type, index) => {
-            let option = document.createElement("option");
-            option.value = type.value;
-            option.textContent = type.text;
-            faceFeatSelect.appendChild(option);
+        const sel = document.getElementById("facialFeatureType");
+        sel.innerHTML = "";
+        const dVar = VALUE_TABLES[feature] || [];
+        dVar.forEach(type => {
+            const option = document.createElement("option");
+            option.value = type.value; option.textContent = type.text;
+            sel.appendChild(option);
         });
     }
 
     function populateBodyFeature(feature) {
-        let bodyFeatSelect = document.getElementById("bodyFeatureType");
-        bodyFeatSelect.innerHTML = "";
-        let dVar = eval(`${feature}Vt`);
-        dVar.forEach((type, index) => {
-            let option = document.createElement("option");
-            option.value = type.value;
-            option.textContent = type.text;
-            bodyFeatSelect.appendChild(option);
+        const sel = document.getElementById("bodyFeatureType");
+        sel.innerHTML = "";
+        const dVar = VALUE_TABLES[feature] || [];
+        dVar.forEach(type => {
+            const option = document.createElement("option");
+            option.value = type.value; option.textContent = type.text;
+            sel.appendChild(option);
         });
+    }
+
+    function setToolTip(type, value) {
+        if (type === "none") { toolTipObj.textContent = ""; return; }
+        const featureSel = (type === "facial") ? facialFeatureObj : bodyFeatureObj;
+        const dVar = VALUE_TABLES[featureSel.value] || [];
+        const result = dVar.find(item => item.value === value);
+        toolTipObj.textContent = (result && result.toolTip) ? result.toolTip : "";
+        persistSelections();
     }
 
     //#endregion
 
-    //#region set functions - sets values
-    
+    //#region Setters for non-facial/body selects
+
+    function setFeature(destKey, value, feats, pText) {
+        feats[destKey] = value;
+        setFeatureText(pTextObj, feats);
+        persistSelections();
+    }
+
     function setFeatureType(type, value) {
         if (type === "facial") {
-            let faceSelect = document.getElementById("facialFeature");
-            let modbox = document.getElementById("modifiers");
-            let nosebridge = document.getElementById("bridges");
-            let color = hairElements["hairColor"];
-            if (faceSelect.value == "nose" && nosebridge.value != ""){
-                value = `${value} ${nosebridge.value}`;
+            const faceSelect = facialFeatureObj;
+            const modbox = modifiersObj;
+            const nosebridge = bridgesObj;
+            let v = value;
+
+            if (faceSelect.value === "nose" && nosebridge.value) v = `${v} ${nosebridge.value}`;
+            if (["nose", "eyebrows", "lips", "chin"].includes(faceSelect.value) && modbox.value) v = `${modbox.value} ${v}`;
+
+            if (faceSelect.value === "eyebrows" && hairElements.hairColor) {
+                const base = hairElements.hairColor.substring(0, hairElements.hairColor.length - 5);
+                v = `${base} ${v}`;
             }
-            if(["nose", "eyebrows", "lips", "chin"].includes(faceSelect.value) &&
-                modbox.value != "") {
-                value = `${modbox.value} ${value}`;
-            }
-            if (faceSelect.value == "eyebrows" && (color != "" && color != undefined)){
-                color = color.substring(0, color.length - 5);
-                value = `${color} ${value}`;
-            }
-            features[faceSelect.value] = value;
-        }
-        else {
-            let bodySelect = document.getElementById("bodyFeature");
+            features[faceSelect.value] = v;
+        } else {
+            const bodySelect = bodyFeatureObj;
             features[bodySelect.value] = value;
         }
         setFeatureText(pTextObj, features);
         persistSelections();
     }
 
-    function setToolTip(type, value) {
-        let feature = "";
-        if (type == "none") {
-            document.getElementById("toolTip").textContent = "";
-            return;
-        }
-        if (type == "facial") {
-            feature = document.getElementById("facialFeature");
-        }
-        else {
-            feature = document.getElementById("bodyFeature");
-        }
-        let dVar = eval(`${feature.value}Vt`);
-        result = dVar.find(item => item.value == value);
-        if (result.hasOwnProperty("toolTip")) {
-            document.getElementById("toolTip").textContent = result.toolTip;
-        }
-        else {
-            document.getElementById("toolTip").textContent = "";
-        }
-        persistSelections()
-    }
+    function setFeatureTypeWithMod(modifier) {
+        const faceSelect = facialFeatureObj;
+        const feature = facialFeatureTypeObj;
+        let color = hairElements.hairColor;
 
-    function setFeatureTypeWithMod(modifier){
-        let faceSelect = document.getElementById("facialFeature");
-        let feature = document.getElementById("facialFeatureType");
-        let color = hairElements["hairColor"];
-        switch(faceSelect.value){
-            default :
-                break;
+        switch (faceSelect.value) {
+            default: break;
             case "lips":
             case "chin":
-            case "eyebrows":
-                let value = `${modifier} ${feature.value}`;
-                if (faceSelect.value == "eyebrows" && (color != "" && color != undefined)){
-                    color = color.substring(0, color.length - 5);
-                    value = `${color} ${value}`;
+            case "eyebrows": {
+                let v = `${modifier} ${feature.value}`;
+                if (faceSelect.value === "eyebrows" && color) {
+                    const base = color.substring(0, color.length - 5);
+                    v = `${base} ${v}`;
                 }
-                features[faceSelect.value] = value;
-                // add tool tip
+                features[faceSelect.value] = v;
                 break;
-            case "nose":
-                let mod = document.getElementById("modifiers");
-                let nosebridge = document.getElementById("bridges")
-                features[faceSelect.value] = `${mod.value} ${feature.value} ${nosebridge.value}`;
+            }
+            case "nose": {
+                features[faceSelect.value] = `${modifiersObj.value} ${feature.value} ${bridgesObj.value}`;
                 break;
+            }
         }
         setFeatureText(pTextObj, features);
-        persistSelections()
+        persistSelections();
     }
 
     //#endregion
 
+    //#region Randomizer + update
+
+    function genRandomFeatures() {
+        features.gender = ["male", "female"][getRandomInt(0, 2)];
+        features.eyeColor = eyeColorVt[getRandomInt(0, eyeColorVt.length)].value;
+        features.skinColor = skinColorVt[getRandomInt(0, skinColorVt.length)].value;
+        features.age = ageVt[7].value;
+        features.freckles = frecklesVt[getRandomInt(0, frecklesVt.length)].value;
+
+        const hairColor = hairColorVt[getRandomInt(1, hairColorVt.length)].value;
+        if (features.gender === "male") {
+            features.facialHair = facialHairVt[getRandomInt(0, facialHairVt.length)].value;
+            hairElements.hairStyle = maleHairStyles[getRandomInt(0, maleHairStyles.length)].value;
+        } else {
+            features.facialHair = "";
+            hairElements.hairStyle = femaleHairStyles[getRandomInt(0, femaleHairStyles.length)].value;
+        }
+        hairElements.hairColor = hairColor;
+        hairElements.highlights = ""; // optional
+        features.hair = [hairElements.hairColor, hairElements.highlights, hairElements.hairStyle].filter(Boolean).join(" ");
+
+        faceFeatsVt.forEach(item => {
+            const dArr = VALUE_TABLES[item.value] || [];
+            if (dArr.length > 1) features[item.value] = dArr[getRandomInt(1, dArr.length)].value;
+        });
+        bodyFeatsVt.forEach(item => {
+            const dArr = VALUE_TABLES[item.value] || [];
+            if (dArr.length > 1) features[item.value] = dArr[getRandomInt(1, dArr.length)].value;
+        });
+        if (features.gender === "male") features.bustSize = "";
+
+        setFeatureText(pTextObj, features);
+        picsObj.style.display = "inline";
+        if (typeof update === "function") update();
+    }
+
+    function updateImages() {
+        picsObj.style.display = "inline";
+        if (typeof update === "function") update();
+    }
 
     //#endregion
 
-    //#region page setup
+    //#region AI description
+
+    function genDescriptionOutput(aiFace, responseEl, loaderEl) {
+        aiFace.style.display = "none";
+        responseEl.style.display = "inline-block";
+        loaderEl.innerHTML = output.evaluateItem; // provided by your plugin
+    }
+
+    function parseOutput() {
+        const text = responseElObj.value;
+        const pattern = /- (?<key>[\w\s]+): (?<val>[^\n]+)/gi;
+
+        for (const match of text.matchAll(pattern)) {
+            const keyRaw = (match.groups.key || "").trim();
+            const valRaw = (match.groups.val || "").trim();
+            const key = keyRaw.toLowerCase();
+
+            if (key === "name") { pNameObj.innerHTML = valRaw; continue; }
+            if (key === "age") { pNameObj.innerHTML = pNameObj.innerHTML + ", " + valRaw; continue; }
+
+            if (key.includes("hair")) {
+                if (key.includes("color")) {
+                    const idx = hairColorVt.findIndex(o => (o.value || '').toLowerCase().includes(valRaw.toLowerCase()));
+                    const val = (idx > -1 ? hairColorVt[idx].value : valRaw);
+                    features.hairColor = features.eyebrowColor = features.bodyHairColor = val;
+                    hairElements.hairColor = val;
+                } else {
+                    hairElements.hairStyle = valRaw; // naive: append/replace style
+                }
+                features.hair = [hairElements.hairColor, hairElements.highlights, hairElements.hairStyle].filter(Boolean).join(" ");
+                continue;
+            }
+
+            const keyNorm = keyRaw.replace(/\s+/g, '');
+            const dArr = VALUE_TABLES[keyNorm] || [];
+            if (dArr.length) {
+                const idx2 = dArr.findIndex(o => (o.value || '').toLowerCase().includes(valRaw.toLowerCase()));
+                features[keyNorm] = (idx2 > -1 ? dArr[idx2].value : valRaw);
+            } else if (Object.prototype.hasOwnProperty.call(features, keyNorm)) {
+                features[keyNorm] = valRaw;
+            }
+        }
+
+        setFeatureText(pTextObj, features);
+        responseElObj.style.display = "none";
+        aiFaceObj.style.display = "inline";
+        picsObj.style.display = "inline";
+        if (typeof update === "function") update();
+    }
+
+    //#endregion
+
+    //#region Setup
 
     function setupSelects() {
         populateSelect("Skin Tone", skinColorObj, skinColorVt);
@@ -583,65 +512,68 @@ function loadPresetsFromFile(inputEl, onLoaded) {
         populateSelect("Ethnicity", ethnicityObj, ethnicityVt);
         populateSelect("Clothing", clothingObj, clothingVt);
     }
+    setupSelects();
+
+    // master listener for selects
+    document.querySelectorAll("select").forEach(select => {
+        select.addEventListener("change", function () {
+            switch (this.id) {
+                case "facialFeature":
+                    populateFaceFeature(this.value);
+                    populateModifier(this.value, bridgesObj, modifiersObj, eyebrowModVt, noseModVt, lipModVt, jawlineVt);
+                    setToolTip("none", this.value);
+                    break;
+
+                case "facialFeatureType":
+                    setFeatureType("facial", this.value);
+                    setToolTip("facial", this.value);
+                    break;
+
+                case "bodyFeature":
+                    populateBodyFeature(this.value);
+                    setToolTip("none", this.value);
+                    break;
+
+                case "bodyFeatureType":
+                    setFeatureType("body", this.value);
+                    setToolTip("body", this.value);
+                    break;
+
+                case "hair":
+                    populateHair(this.value, hairTypeObj, genderObj, hairColorVt, highlightVt, maleHairStyles, femaleHairStyles);
+                    setToolTip("none", this.value);
+                    break;
+
+                case "hairType":
+                    setHairElement(this.value, hairObj, hairElements, features, pTextObj);
+                    setToolTip("none", this.value);
+                    break;
+
+                case "modifiers":
+                case "bridges":
+                    setFeatureTypeWithMod(this.value);
+                    break;
+
+                case "preset":
+                    // load selected preset into features
+                    const pick = listFeatures.find(x => x.name === this.value);
+                    if (pick) {
+                        Object.assign(features, deepCopyObject(pick), { name: "" });
+                        // also refresh local hairElements if present in string
+                        // (cheap parse: keep existing hairElements unless you want a full parser)
+                        setFeatureText(pTextObj, features);
+                    }
+                    break;
+
+                default:
+                    setFeature(this.id.split('FeatureType')[0], this.value, features, pTextObj);
+                    setToolTip("none", this.value);
+                    break;
+            }
+        });
+    });
 
     //#endregion
-
-    setupSelects();
-</script>
-<script>
-/**
- * Inline Handler Migrator
- * Converts inline handlers (onclick="...") to addEventListener listeners.
- * Safe to run multiple times; no-ops if nothing to migrate.
- * Note: This keeps behavior 1:1, including reliance on global functions/variables.
- */
-(function migrateInlineHandlers(){
-  const ATTRS = [
-    ['onclick',      'click'],
-    ['onchange',     'change'],
-    ['oninput',      'input'],
-    ['onsubmit',     'submit'],
-    ['onfocus',      'focus'],
-    ['onblur',       'blur'],
-    ['onmouseover',  'mouseover'],
-    ['onmouseout',   'mouseout'],
-    ['onkeydown',    'keydown'],
-    ['onkeyup',      'keyup']
-  ];
-
-  // use a tree-walk that tolerates dynamic nodes
-  const root = document;
-  for (const [attr, evt] of ATTRS) {
-    // a static NodeList is fine; we remove attributes after binding
-    const nodes = root.querySelectorAll('[' + attr + ']');
-    for (const el of nodes) {
-      const code = el.getAttribute(attr);
-      if (!code) continue;
-
-      // Create a function with `event` param, bound `this` = element
-      // Using Function here reproduces inline-script semantics
-      let fn;
-      try {
-        fn = new Function('event', code);
-      } catch (e) {
-        console.error('[migrateInlineHandlers] Could not compile', attr, 'on', el, e);
-        continue;
-      }
-
-      // For submit, prevent default if inline code returns false (matches old behavior)
-      const handler = function(e){
-        const result = fn.call(el, e);
-        if (evt === 'submit' && result === false) {
-          e.preventDefault();
-        }
-        return result;
-      };
-
-      el.addEventListener(evt, handler, false);
-      el.removeAttribute(attr);
-    }
-  }
-})();
 </script>
 
 </html>
