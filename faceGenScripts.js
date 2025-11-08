@@ -73,6 +73,30 @@ window.features = window.features || {
 window.listFeatures = window.listFeatures || [];
 window.hairElements = window.hairElements || { hairColor: "", highlights: "", hairStyle: "" };
 
+// Minimal theme toggler (no dependencies)
+(function attachThemeToggle(){
+  const btn = document.getElementById('themeToggle');
+  if (!btn) return; // if the button isn't on the page, do nothing
+
+  const KEY = 'fbg.theme';
+  const root = document.documentElement;
+
+  // apply saved theme on load
+  const saved = localStorage.getItem(KEY) || 'light';
+  root.setAttribute('data-theme', saved);
+  btn.setAttribute('aria-pressed', String(saved === 'dark'));
+
+  // toggle and persist
+  btn.addEventListener('click', () => {
+    const cur = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    const next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem(KEY, next);
+    btn.setAttribute('aria-pressed', String(next === 'dark'));
+  });
+})();
+
+
 // === THEME (WCAG) — BEGIN ===
 // Minimal, self-contained; no dependencies on the rest of your code.
 // Light palette is injected immediately so the page never flashes unstyled.
@@ -738,9 +762,6 @@ function init() {
     wireButtons();
     wrapUpdateForValidation();
     changeGender(els().gender, els().facialHair);
-    if (window.FBG && typeof window.FBG.wireTheme === "function") {
-        window.FBG.wireTheme();  // attaches the click handler to #themeToggle
-    }    
 }
 
 /* Expose API (Perchance/markup may call these) */

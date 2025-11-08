@@ -12,11 +12,35 @@
 
   <link rel="stylesheet" type="text/css" href="https://davehudg.github.io/perchance/page.css" />
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style id="fbg-theme-base">
+  :root{
+    --bg:#ffffff; --fg:#0b1220; --muted:#475569;
+    --card:#f8fafc; --border:#e5e7eb;
+    --accent:#2563eb; --accent-contrast:#ffffff; --focus:#1d4ed8;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0b1220; --fg:#e5e7eb; --muted:#94a3b8;
+    --card:#111827; --border:#1f2937;
+    --accent:#60a5fa; --accent-contrast:#0b1220; --focus:#3b82f6;
+  }
+
+  /* Non-invasive consumers (won’t fight your layout) */
+  body{ background:var(--bg); color:var(--fg); }
+  .card{ background:var(--card); border:1px solid var(--border); }
+  button,input,select,textarea{
+    color:inherit; background:#0000; border:1px solid var(--border); border-radius:8px;
+  }
+  button{ background:var(--accent); color:var(--accent-contrast); border-color:transparent; cursor:pointer; }
+  button:focus,input:focus,select:focus,textarea:focus{ outline:3px solid var(--focus); outline-offset:2px; }
+</style>
+
 </head>
 
 <body ng-app="myapp" ng-controller="myctrl">
   <h1>[pageTitle]</h1>
-
+<button id="themeToggle" type="button" aria-pressed="false" title="Toggle light/dark theme">
+  Toggle Theme
+</button>
   <div>
     <div>
       <select id="gender" ng-model="features.gender">
