@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>[pageTitle]</title>
+
+  <!-- Value tables (must load BEFORE faceGenScripts.js) -->
+  <script src="https://davehudg.github.io/perchance/lists.js"></script>
+
+  <!-- Consolidated logic -->
+  <script src="faceGenScripts.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="https://davehudg.github.io/perchance/page.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+
+<body ng-app="myapp" ng-controller="myctrl">
+  <h1>[pageTitle]</h1>
+
+  <div>
+    <div>
+      <select id="gender" ng-model="features.gender">
+        <option value="">Gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+      <select id="ethnicity"></select>
+      <select id="eyeColor"></select>
+      <select id="skinColor"></select>
+      <select id="age"></select>
+      <select id="glasses"></select>
+      <select id="freckles"></select>
+      <select id="facialHair" style="display:none;"></select>
+      <select id="hair"></select>
+      <select id="hairType"></select>
+      <select id="clothing"></select>
+    </div>
+
+    <select id="facialFeature"></select>
+    <select id="facialFeatureType"></select>
+    <select id="modifiers" style="display:none;"></select>
+    <select id="bridges" style="display:none;"></select>
+    <br>
+    <select id="bodyFeature"></select>
+    <select id="bodyFeatureType"></select>
+
+    <p id="toolTip"></p>
+    <button id="random">Random</button>
+    <button id="gen">Generate Images</button>
+    <button id="reset">Reset</button>
+    <br>
+    <textarea id="pText" name="pText" cols="55" rows="10">mannequin</textarea>
+  </div>
+
+  <div>
+    <select id="preset">
+      <option value="">Choose a preset</option>
+    </select>
+    <input id="presetName" type="text" />
+    <button id="add">Add To Array</button>
+    <button id="save">Save Features</button>
+  </div>
+
+  <div>
+    <textarea id="instructionEl" placeholder="Type the name of someone famous" cols="40" rows="1"></textarea><br>
+    <button id="generateBtn">Generate Description</button>
+    <button id="something">Parse Output</button>
+    <div id="loaderEl"></div>
+    <textarea id="responseEl" cols="55" rows="20" style="display:none;"></textarea>
+    <textarea id="pName" hidden>mannequin</textarea>
+  </div>
+
+  <br>
+  <div id="pics" style="display:none;">
+    <a id="aiFace" style="display:none;">[outputName]</a>
+    [outputFace]
+    [outputFace]
+    <br>
+    [outputBody]
+    [outputBody]
+  </div>
+
+  <div id="live" aria-live="polite" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      if (typeof init === 'function') init();
+    });
+  </script>
+</body>
+</html>
