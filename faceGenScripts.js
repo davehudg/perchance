@@ -73,6 +73,96 @@ window.features = window.features || {
 window.listFeatures = window.listFeatures || [];
 window.hairElements = window.hairElements || { hairColor: "", highlights: "", hairStyle: "" };
 
+// === THEME (WCAG) — BEGIN ===
+// Minimal, self-contained; no dependencies on the rest of your code.
+// Light palette is injected immediately so the page never flashes unstyled.
+(function ThemeModule(){
+  const STORAGE_KEY = "fbg.theme";
+  const THEMES = {
+    light: {
+      "--bg": "#ffffff",
+      "--fg": "#0b1220",
+      "--muted": "#475569",
+      "--card": "#f8fafc",
+      "--border": "#e5e7eb",
+      "--accent": "#2563eb",
+      "--accent-contrast": "#ffffff",
+      "--focus": "#1d4ed8"
+    },
+    dark: {
+      "--bg": "#0b1220",
+      "--fg": "#e5e7eb",
+      "--muted": "#94a3b8",
+      "--card": "#111827",
+      "--border": "#1f2937",
+      "--accent": "#60a5fa",
+      "--accent-contrast": "#0b1220",
+      "--focus": "#3b82f6"
+    }
+  };
+
+  // Inject base CSS once, with *light* defaults so the page is readable before JS runs.
+  function injectBaseThemeCSS(){
+    if (document.getElementById("fbg-theme-base")) return;
+    const s = document.createElement("style");
+    s.id = "fbg-theme-base";
+    s.textContent = `
+      :root{
+        --bg:${THEMES.light["--bg"]};
+        --fg:${THEMES.light["--fg"]};
+        --muted:${THEMES.light["--muted"]};
+        --card:${THEMES.light["--card"]};
+        --border:${THEMES.light["--border"]};
+        --accent:${THEMES.light["--accent"]};
+        --accent-contrast:${THEMES.light["--accent-contrast"]};
+        --focus:${THEMES.light["--focus"]};
+      }
+      html,body{height:100%}
+      body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif}
+      /* Non-invasive utilities. **Do not** rename your existing classes or IDs. */
+      .card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1rem}
+      button,input,select,textarea{background:#0000;color:inherit;border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem}
+      button{background:var(--accent);color:var(--accent-contrast);border-color:transparent;cursor:pointer}
+      button:hover{filter:brightness(1.05)}
+      button:focus,input:focus,select:focus,textarea:focus{outline:3px solid var(--focus);outline-offset:2px}
+    `;
+    document.head.appendChild(s);
+  }
+
+  function applyTheme(name){
+    const vars = THEMES[name] || THEMES.light;
+    const root = document.documentElement;
+    for (const [k,v] of Object.entries(vars)) root.style.setProperty(k, v);
+    localStorage.setItem(STORAGE_KEY, name);
+    const btn = document.getElementById("themeToggle");
+    if (btn) btn.setAttribute("aria-pressed", String(name === "dark"));
+  }
+
+  function toggleTheme(){
+    const cur = localStorage.getItem(STORAGE_KEY) || "light";
+    applyTheme(cur === "dark" ? "light" : "dark");
+  }
+
+  // Safe to call multiple times—idempotent.
+  function wireTheme(){
+    const btn = document.getElementById("themeToggle");
+    if (!btn || btn.dataset.wired === "1") return;
+    btn.addEventListener("click", toggleTheme);
+    btn.dataset.wired = "1";
+  }
+
+  // Public shim so you can call from your init()
+  window.FBG = window.FBG || {};
+  window.FBG.applyTheme = applyTheme;
+  window.FBG.wireTheme = wireTheme;
+
+  // Early boot
+  injectBaseThemeCSS();
+  // Respect saved preference *immediately*
+  applyTheme(localStorage.getItem(STORAGE_KEY) || "light");
+})();
+ // === THEME (WCAG) — END ===
+
 /* ================== ELEMENT HELPERS ================== */
 
 function $(id) { return document.getElementById(id); }
@@ -648,6 +738,9 @@ function init() {
     wireButtons();
     wrapUpdateForValidation();
     changeGender(els().gender, els().facialHair);
+    if (window.FBG && typeof window.FBG.wireTheme === "function") {
+        window.FBG.wireTheme();  // attaches the click handler to #themeToggle
+    }    
 }
 
 /* Expose API (Perchance/markup may call these) */
