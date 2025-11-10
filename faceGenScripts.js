@@ -130,7 +130,40 @@
   //=============================================================================
   // Boot
   //=============================================================================
-  on(window, "DOMContentLoaded", init);
+  // on(window, "DOMContentLoaded", init);
+
+  // --- Diagnostics: catch uncaught errors early
+  window.addEventListener("error", (e) => {
+    console.error("[FBG] Uncaught error:", e.error || e.message, e.filename, e.lineno, e.colno);
+  });
+
+  // --- Start up robustly in Perchance: wait for DOM + #appRoot
+  boot();
+
+  function boot() {
+    console.log("[FBG] boot starting; readyState=", document.readyState);
+    const start = () => waitFor("#appRoot", init);
+    if (document.readyState === "interactive" || document.readyState === "complete") {
+      start();
+    } else {
+      document.addEventListener("DOMContentLoaded", start);
+    }
+  }
+
+  // Poll for a selector (Perchance injects content async inside iframe)
+  function waitFor(sel, cb, tries = 0) {
+    const el = document.querySelector(sel);
+    if (el) {
+      console.log("[FBG] found", sel, "— initializing");
+      cb();
+      return;
+    }
+    if (tries > 50) {
+      console.error("[FBG] gave up waiting for", sel);
+      return;
+    }
+    setTimeout(() => waitFor(sel, cb, tries + 1), 100);
+  }
 
   //-----------------------------------------------------------------------------
 
