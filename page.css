@@ -1,72 +1,145 @@
-* {
-    --bg-color: #1f2937;
-    --text-color: #fff;
-    --button-color: #268bd2;
-    --color: #ff4b6c;
-    --button-hover-color: #f75e6c;
+/* ====== Design tokens ====== */
+:root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --muted: #666666;
+  --card: #f4f6f8;
+  --focus: #1b6ef3;
+  --border: #d8dde3;
+  --danger: #b00020;
+
+  /* spacing & radii */
+  --space-1: 6px;
+  --space-2: 10px;
+  --space-3: 14px;
+  --space-4: 18px;
+  --radius: 12px;
+
+  /* responsive type scale */
+  --fs-1: clamp(12px, 1.6vw, 14px);
+  --fs-2: clamp(13px, 1.8vw, 15px);
+  --fs-3: clamp(14px, 2vw, 16px);
+  --fs-h: clamp(16px, 2.2vw, 18px);
+
+  /* layout max width */
+  --container: 980px;
+}
+:root[data-theme="dark"], [data-theme="dark"] {
+  --bg: #0f1216;
+  --fg: #e7ecf3;
+  --muted: #a0a7b3;
+  --card: #151a21;
+  --focus: #7aa2ff;
+  --border: #2a313b;
+  --danger: #ff5d6c;
 }
 
-body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    font-size: 16px;
-    font-family: 'Open Sans', sans-serif;
+/* ====== Base ====== */
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font: var(--fs-3)/1.45 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
+.wrap {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-3);
+}
+
+/* ====== Utility layout ====== */
+.stack { display: flex; flex-direction: column; gap: var(--space-3); }
+.toolbar { display:flex; gap: var(--space-2); flex-wrap: wrap; align-items:center; }
+.row { display: grid; gap: var(--space-3); }
+.row-3 { display: grid; gap: var(--space-2); }
+
+/* Responsive grids:
+   - Small (≤600px): single column everywhere
+   - Medium (601–960px): 2 cols for main rows, 2–3 cols for mini-grids
+   - Large (≥961px): 2 columns for main rows; 3 columns for mini-grids
+*/
+@media (max-width: 600px) {
+  .row { grid-template-columns: 1fr; }
+  .row-3 { grid-template-columns: 1fr; }
+}
+@media (min-width: 601px) and (max-width: 960px) {
+  .row { grid-template-columns: 1fr 1fr; }
+  .row-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 961px) {
+  .row { grid-template-columns: 1fr 1fr; }
+  .row-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Make small clusters auto-wrap nicely on all screens */
+.row-3 > * { min-width: 0; }
+
+/* ====== Cards & form elements ====== */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+h3 { font-size: var(--fs-h); margin: 0 0 var(--space-2); }
+label { display: block; font-weight: 600; margin-bottom: 4px; font-size: var(--fs-2); }
+
+select, input[type="text"], textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: var(--fs-3);
+}
+textarea { min-height: 140px; resize: vertical; }
 
 button {
-    align-items: start;
-    color: var(--text-color);
-    background-color: var(--button-color);
-    border: 2px solid var(--button-color);
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 500;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: var(--fs-2);
+  min-height: 40px; /* better touch target */
+}
+button[aria-pressed="true"] { outline: 3px solid var(--focus); outline-offset: 2px; }
+button.primary { background: var(--focus); color: #fff; border-color: var(--focus); }
+button.danger { border-color: var(--danger); color: var(--danger); background: transparent; }
+
+.grid-slim { display:grid; gap: var(--space-2); grid-template-columns: 1fr auto; align-items: center; }
+@media (max-width: 600px) {
+  .grid-slim { grid-template-columns: 1fr; }
 }
 
-button:hover {
-    background-color: var(--button-hover-color);
+.sr-only { position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+.vis-badge { font-size: var(--fs-1); color: var(--muted); }
+
+.footer-note { color: var(--muted); font-size: var(--fs-1); }
+
+/* Preset list should size well across devices */
+.list {
+  display:flex; flex-direction:column; gap:6px;
+  max-height: clamp(160px, 28vh, 260px);
+  overflow:auto;
+}
+.list button { width:100%; text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Toolbar spacing on narrow screens */
+@media (max-width: 600px) {
+  .toolbar { gap: var(--space-2); }
+  #copyBtn, #themeToggle { width: auto; }
 }
 
-textarea,
-select,
-input {
-    /* align-items: start; */
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    border: 2px solid var(--button-color);
-    padding: 10px;
-    border-radius: 5px;
-    margin: 10px 0;
-}
-
-input:focus {
-    outline: none;
-    box-shadow: 0 0 5px var(--button-color);
-}
-
-.accordion {
-    background-color: --bg-color;
-    color: --text-color;
-    cursor: pointer;
-    padding: 18px;
-    width: 100%;
-    text-align: left;
-    border: none;
-    outline: none;
-    transition: 0.4s;
-}
-
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.active,
-.accordion:hover {
-    background-color: --button-hover-color;
-}
-
-/* Style the accordion panel. Note: hidden by default */
-.panel {
-    padding: 0 18px;
-    background-color: --bg-color;
-    display: none;
-    overflow: hidden;
+/* Output blocks readable on small screens */
+#outputFace, #outputBody, #outputName {
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }

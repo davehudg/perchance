@@ -1,579 +1,168 @@
-<html>
-
+<!doctype html>
+<html lang="en" data-theme="light">
 <head>
-    <title>[pageTitle]</title>
-
-    <!-- PROD -->
-    <script src="https://davehudg.github.io/perchance/lists.js"></script>
-    <!-- IMPORTANT: do NOT load the old faceGenScripts here; we define functions inline below -->
-    <script src="https://davehudg.github.io/perchance/faceGenScripts.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://davehudg.github.io/perchance/page.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Face/Body Generator (Clean)</title>
+  <link rel="stylesheet" href="page.css" />
 </head>
+<body>
+  <div class="wrap" id="appRoot">
+    <header class="toolbar" aria-label="Top toolbar">
+      <button id="themeToggle" type="button" aria-pressed="false" aria-label="Toggle theme">🌓 Theme</button>
+      <!-- <span class="vis-badge">WCAG AA contrast</span> -->
+      <div style="flex:1"></div>
+      <button id="copyBtn" type="button" aria-label="Copy prompt to clipboard">📋 Copy</button>
+    </header>
 
-<body ng-app="myapp" ng-controller="myctrl">
-    <h1>[pageTitle]</h1>
+    <main class="stack" role="main">
 
-    <div>
-        <div>
-            <select id="gender" ng-model="features.gender" onchange="changeGender(genderObj, facialHairObj)">
-                <option value="">Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-            </select>
-            <select id="ethnicity"></select>
-            <select id="eyeColor"></select>
-            <select id="skinColor"></select>
-            <select id="age"></select>
-            <select id="glasses"></select>
-            <select id="freckles"></select>
-            <select id="facialHair" style="display: none;"></select>
-            <select id="hair"></select>
-            <select id="hairType"></select>
-            <select id="clothing"></select>
+      <!-- GENERIC -->
+      <section class="card stack" aria-labelledby="generic-label">
+        <h3 id="generic-label">Generic</h3>
+        <div class="row-3">
+          <div><label for="selGender">Gender</label><select id="selGender"></select></div>
+          <div><label for="selEthnicity">Ethnicity</label><select id="selEthnicity"></select></div>
+          <div><label for="selEyeColor">Eye color</label><select id="selEyeColor"></select></div>
+
+          <div><label for="selSkinTone">Skin tone</label><select id="selSkinTone"></select></div>
+          <div><label for="selAge">Age</label><select id="selAge"></select></div>
+          <div><label for="selGlasses">Glasses</label><select id="selGlasses"></select></div>
+
+          <div><label for="selFreckles">Freckles</label><select id="selFreckles"></select></div>
+          <div><label for="selClothing">Clothing</label><select id="selClothing"></select></div>
+          <div></div>
+        </div>
+      </section>
+
+      <!-- HAIR -->
+      <section class="card stack" aria-labelledby="hair-label">
+        <h3 id="hair-label">Hair</h3>
+        <div class="row-3">
+          <div><label for="selHairColor">Color</label><select id="selHairColor"></select></div>
+          <div><label for="selHairHighlights">Highlights</label><select id="selHairHighlights"></select></div>
+          <div><label for="selHairStyle">Style</label><select id="selHairStyle"></select></div>
+          <div id="facialHairWrap">
+            <label for="selFacialHair">Facial hair (if male)</label>
+            <select id="selFacialHair"></select>
+          </div>
+        </div>
+      </section>
+
+      <!-- FACE -->
+      <section class="card stack" aria-labelledby="face-label">
+        <h3 id="face-label">Face</h3>
+        <div class="row-3">
+          <div><label for="selFaceShape">Shape</label><select id="selFaceShape"></select></div>
+          <div><label for="selFaceLength">Length</label><select id="selFaceLength"></select></div>
+          <div><label for="selHairline">Hairline</label><select id="selHairline"></select></div>
+
+          <div><label for="selEyebrows">Eyebrows</label><select id="selEyebrows"></select></div>
+          <div><label for="selBrowRidge">Brow ridge</label><select id="selBrowRidge"></select></div>
+          <div><label for="selEyeShape">Eye shape</label><select id="selEyeShape"></select></div>
+
+          <div><label for="selEyeSet">Eye set</label><select id="selEyeSet"></select></div>
+          <div><label for="selNose">Nose</label><select id="selNose"></select></div>
+          <div><label for="selCheekBones">Cheek bones</label><select id="selCheekBones"></select></div>
+
+          <div><label for="selLips">Lips</label><select id="selLips"></select></div>
+          <div><label for="selChin">Chin</label><select id="selChin"></select></div>
+          <div><label for="selJawline">Jawline</label><select id="selJawline"></select></div>
         </div>
 
-        <select id="facialFeature"></select>
-        <select id="facialFeatureType"></select>
-        <select id="modifiers" style="display: none;"></select>
-        <select id="bridges" style="display: none;"></select>
-        <br>
-        <select id="bodyFeature"></select>
-        <select id="bodyFeatureType"></select>
+        <div class="grid-slim">
+          <input id="inpFaceCustom" type="text" placeholder="Optional: face notes (e.g., eyeliner, light freckles)" />
+          <button id="btnRandomFace" type="button">🎲 Random Face</button>
+        </div>
+      </section>
 
-        <p id="toolTip"></p>
-        <button id="random" onclick="genRandomFeatures()">Random</button>
-        <button id="gen" onclick="updateImages()">Generate Images</button>
-        <button id="reset" onclick="reset(pTextObj, features)">Reset</button>
-        <br>
-        <textarea id="pText" name="pText" cols="55" rows="10">mannequin</textarea>
-    </div>
+      <!-- BODY -->
+      <section class="card stack" aria-labelledby="body-label">
+        <h3 id="body-label">Body</h3>
+        <div class="row-3">
+          <div><label for="selBodyType">Type</label><select id="selBodyType"></select></div>
+          <div><label for="selComposition">Composition</label><select id="selComposition"></select></div>
+          <div><label for="selMuscularity">Muscularity</label><select id="selMuscularity"></select></div>
 
-    <div>
-        <!-- <input type="file" id="fileInput">
-    <pre id="fileContent"></pre> -->
-        <select id="preset">
-            <option value="">Choose a preset</option>
-        </select>
-        <input id="presetName" type="text" />
-        <button id="add" onclick="addToArray(presetNameObj, presetObj, listFeatures, features, pTextObj)">Add To
-            Array</button>
-        <button id="save" onclick="savePresets(listFeatures)">Save Features</button>
-    </div>
+          <div><label for="selHeight">Height</label><select id="selHeight"></select></div>
+          <div id="bustSizeWrap">
+            <label for="selBustSize">Bust size (if female)</label>
+            <select id="selBustSize"></select>
+          </div>
+          <div></div>
+        </div>
 
-    <div>
-        <textarea id="instructionEl" placeholder="Type the name of someone famous" cols="40" rows="1"></textarea><br>
-        <button id="generateBtn" onclick="genDescriptionOutput(aiFaceObj, responseElObj, loaderElObj)">Generate
-            Description</button>
-        <button id="something" onclick="parseOutput()">Parse Output</button>
-        <div id="loaderEl"></div>
-        <textarea id="responseEl" cols="55" rows="20" style="display: none;"></textarea>
-        <textarea id="pName" hidden>mannequin</textarea>
-    </div>
+        <div class="grid-slim">
+          <input id="inpBodyCustom" type="text" placeholder="Optional: body notes (e.g., posture, accessories)" />
+          <button id="btnRandomBody" type="button">🎲 Random Body</button>
+        </div>
+      </section>
 
-    <br>
-    <div id="pics" style="display: none;">
-        <a id="aiFace" style="display: none;">[outputName]</a>
-        [outputFace]
-        [outputFace]
-        <br>
-        [outputBody]
-        [outputBody]
-    </div>
+      <!-- OUTPUTS -->
+      <section class="row" aria-labelledby="sec-output">
+        <h2 id="sec-output" class="sr-only">Outputs</h2>
+
+        <div class="card stack" id="outputFaceCard" aria-labelledby="oface-label">
+          <h3 id="oface-label">Portrait Prompt</h3>
+          <div id="outputFace" aria-live="polite"></div>
+        </div>
+
+        <div class="card stack" id="outputBodyCard" aria-labelledby="obody-label">
+          <h3 id="obody-label">Body Prompt</h3>
+          <div id="outputBody" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- DO NOT MOVE -->
+      <section class="card stack" aria-labelledby="oname-label">
+        <h3 id="oname-label">Output Name</h3>
+        <div id="outputName" aria-live="polite"></div>
+      </section>
+
+      <section class="card stack" aria-labelledby="ptext-label">
+        <h3 id="ptext-label">Combined Prompt</h3>
+        <textarea id="pText" aria-describedby="ptext-help" spellcheck="false"></textarea>
+        <div id="ptext-help" class="footer-note">“Copy” copies from this box. You can also edit it manually.</div>
+      </section>
+
+      <!-- PRESETS (unchanged UI) -->
+      <section class="row" aria-labelledby="sec-presets">
+        <h2 id="sec-presets">Presets</h2>
+
+        <div class="card stack" id="presetsLeft" aria-labelledby="plist-label">
+          <h3 id="plist-label">Saved Presets</h3>
+          <div class="list" id="presetList" role="listbox" aria-label="Preset list"></div>
+          <div class="toolbar">
+            <button id="btnPresetAdd" class="primary" type="button">➕ Add</button>
+            <button id="btnPresetUpdate" type="button">💾 Update</button>
+            <button id="btnPresetDelete" class="danger" type="button">🗑️ Delete</button>
+          </div>
+        </div>
+
+        <div class="card stack" id="presetsRight" aria-labelledby="pimport-label">
+          <h3 id="pimport-label">Import / Export</h3>
+          <div class="stack">
+            <div>
+              <label for="presetName">Preset Name</label>
+              <input id="presetName" type="text" placeholder="e.g., Warm Autumn Portrait" />
+            </div>
+
+            <div class="toolbar">
+              <input id="fileImport" type="file" accept="application/json" aria-label="Choose a presets JSON file" />
+              <button id="btnImport" type="button">📥 Import JSON</button>
+              <button id="btnExport" type="button">📤 Export All</button>
+            </div>
+
+            <div class="footer-note">
+              Presets live in your browser (localStorage). Export to keep a backup or move between devices.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="lists.js" defer></script>
+  <script src="faceGenScripts.js" defer></script>
 </body>
-
-<script>
-    //#region Stable lookups (no eval) + minimal config
-
-    window.FBG = window.FBG || { storageKey: 'fbg:last' };
-
-    const VALUE_TABLES = {
-        gender: genderVt,
-        ethnicity: ethnicityVt,
-        eyeColor: eyeColorVt,
-        skinColor: skinColorVt,
-        age: ageVt,
-        facialHair: facialHairVt,
-        glasses: glassesVt,
-
-        faceShape: faceShapeVt,
-        faceLength: faceLengthVt,
-        hairline: hairlineVt,
-        forehead: foreheadVt,
-        eyebrows: eyebrowsVt,
-        browRidge: browRidgeVt,
-        eyeShape: eyeShapeVt,
-        eyeSet: eyeSetVt,
-        nose: noseVt,
-        cheekBones: cheekBonesVt,
-        lips: lipsVt,
-        chin: chinVt,
-        jawline: jawlineVt,
-
-        eyebrowMod: eyebrowModVt,
-        noseMod: noseModVt,
-        noseBridge: noseBridgeVt,
-        lipMod: lipModVt,
-
-        hair: hairVt,
-        hairColor: hairColorVt,
-        highlights: highlightVt,
-        hairStyleMale: maleHairStyles,
-        hairStyleFemale: femaleHairStyles,
-
-        bodyType: bodyTypeVt,
-        bodyComp: bodyCompVt,
-        muscularity: muscularityVt,
-        height: heightVt,
-        bustSize: bustSizeVt,
-
-        ears: earsVt,
-        clothing: clothingVt
-    };
-
-    //#endregion
-
-    //#region State + element refs
-
-    // Core feature state (so non-facial/body selectors have somewhere to write)
-    var features = {
-        name: "",
-        gender: "", ethnicity: "", eyeColor: "", skinColor: "", age: "", glasses: "", freckles: "", facialHair: "",
-        hair: "", hairColor: "", highlights: "",
-        faceShape: "", faceLength: "", hairline: "", forehead: "", eyebrows: "", browRidge: "", eyeShape: "", eyeSet: "",
-        nose: "", cheekBones: "", lips: "", chin: "", jawline: "",
-        ears: "", clothing: "",
-        bodyType: "", bodyComp: "", muscularity: "", height: "", bustSize: ""
-    };
-
-    var listFeatures = [];
-    var hairElements = { hairColor: "", highlights: "", hairStyle: "" };
-
-    // DOM refs
-    const genderObj = document.getElementById("gender");
-    const eyeColorObj = document.getElementById("eyeColor");
-    const skinColorObj = document.getElementById("skinColor");
-    const ageObj = document.getElementById("age");
-    const glassesObj = document.getElementById("glasses");
-    const frecklesObj = document.getElementById("freckles");
-    const facialHairObj = document.getElementById("facialHair");
-    const hairObj = document.getElementById("hair");
-    const hairTypeObj = document.getElementById("hairType");
-    const facialFeatureObj = document.getElementById("facialFeature");
-    const facialFeatureTypeObj = document.getElementById("facialFeatureType");
-    const modifiersObj = document.getElementById("modifiers");
-    const bridgesObj = document.getElementById("bridges");
-    const bodyFeatureObj = document.getElementById("bodyFeature");
-    const bodyFeatureTypeObj = document.getElementById("bodyFeatureType");
-    const toolTipObj = document.getElementById("toolTip");
-    const randomObj = document.getElementById("random");
-    const genObj = document.getElementById("gen");
-    const resetObj = document.getElementById("reset");
-    const pTextObj = document.getElementById("pText");
-    const instructionElObj = document.getElementById("instructionEl");
-    const generateBtnObj = document.getElementById("generateBtn");
-    const somethingObj = document.getElementById("something");
-    const loaderElObj = document.getElementById("loaderEl");
-    const responseElObj = document.getElementById("responseEl");
-    const pNameObj = document.getElementById("pName");
-    const aiFaceObj = document.getElementById("aiFace");
-    const picsObj = document.getElementById("pics");
-    const ethnicityObj = document.getElementById("ethnicity");
-    const saveObj = document.getElementById("save");
-    const presetNameObj = document.getElementById("presetName");
-    const presetObj = document.getElementById("preset");
-    const clothingObj = document.getElementById("clothing");
-
-    //#endregion
-
-    //#region Utilities
-
-    function changeGender(gender, facialHair) {
-        if (!gender || !facialHair) return;
-        if (gender.value === "male") facialHair.style.display = "inline";
-        else { facialHair.value = ""; facialHair.style.display = "none"; }
-    }
-
-    function deepCopyArray(arr) {
-        return arr.map(item => Array.isArray(item) ? deepCopyArray(item) :
-            (item && typeof item === 'object') ? deepCopyObject(item) : item);
-    }
-    function deepCopyObject(obj) {
-        const copy = {};
-        for (const [k, v] of Object.entries(obj)) {
-            if (Array.isArray(v)) copy[k] = deepCopyArray(v);
-            else if (v && typeof v === 'object') copy[k] = deepCopyObject(v);
-            else copy[k] = v;
-        }
-        return copy;
-    }
-    function setFeatureText(el, feats) {
-        const vals = Object.entries(feats).filter(([k, v]) => v && k !== 'name').map(([k, v]) => v);
-        el.textContent = vals.join(", ");
-    }
-    function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
-    function persistSelections() { try { localStorage.setItem(FBG.storageKey, JSON.stringify(features)); } catch { } }
-    function hydrateSelections() {
-        try {
-            const saved = JSON.parse(localStorage.getItem(FBG.storageKey) || 'null');
-            if (saved) { Object.assign(features, saved); setFeatureText(pTextObj, features); }
-        } catch { }
-    }
-    try { hydrateSelections(); } catch { }
-
-    //#endregion
-
-    //#region Presets
-
-    function addToArray(presetNameInput, presetSelect, arrayOfFeatures, feats, pText) {
-        const name = (presetNameInput.value || "").trim();
-        if (!name) { presetNameInput.style.background = "yellow"; return; }
-        if (arrayOfFeatures.some(x => x.name === name)) { presetNameInput.style.background = "yellow"; return; }
-        const copy = deepCopyObject(feats);
-        copy.name = name;
-        arrayOfFeatures.push(copy);
-
-        const opt = document.createElement("option");
-        opt.value = name; opt.textContent = name;
-        presetSelect.appendChild(opt);
-
-        // Clear UI text but keep current working selections
-        presetNameInput.value = "";
-        setFeatureText(pText, feats);
-        persistSelections();
-    }
-
-    async function savePresets(arrayOfFeatures) {
-        const payload = JSON.stringify(arrayOfFeatures || [], null, 2);
-        try {
-            if (window.showSaveFilePicker) {
-                const fh = await window.showSaveFilePicker({
-                    suggestedName: 'features.json',
-                    types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }]
-                });
-                const ws = await fh.createWritable(); await ws.write(payload); await ws.close();
-            } else {
-                const blob = new Blob([payload], { type: 'application/json' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'features.json';
-                document.body.appendChild(a); a.click(); a.remove();
-            }
-        } catch (e) { console.error(e); }
-    }
-
-    //#endregion
-
-    //#region Hair handling (compose features.hair properly)
-
-    function setHairElement(selectedValue, hairSelect, hairEl, feats, pText) {
-        // Which subfield are we setting?
-        switch ((hairSelect && hairSelect.value) || "") {
-            case "hairColor": hairEl.hairColor = selectedValue || ""; break;
-            case "highlights": hairEl.highlights = selectedValue || ""; break;
-            case "hairStyle": hairEl.hairStyle = selectedValue || ""; break;
-            default: break;
-        }
-        // Build the hair string
-        const parts = [hairEl.hairColor, hairEl.highlights, hairEl.hairStyle].filter(Boolean);
-        feats.hair = parts.join(" ");
-        setFeatureText(pTextObj, feats);
-        persistSelections();
-    }
-
-    //#endregion
-
-    //#region Populate + tooltips
-
-    function populateSelect(header, selectItem, list) {
-        selectItem.innerHTML = "";
-        const hdr = document.createElement("option");
-        hdr.textContent = header; hdr.value = "";
-        selectItem.appendChild(hdr);
-        list.forEach(item => {
-            const op = document.createElement("option");
-            op.value = item.value; op.textContent = item.text;
-            selectItem.appendChild(op);
-        });
-    }
-
-    function populateModifier(group, bridge, mods, ebrowList, noseList, lipList, jawList) {
-        switch (group) {
-            case "eyebrows": populateSelect("Eyebrow Modifiers", mods, ebrowList); bridge.style.display = "none"; break;
-            case "nose": populateSelect("Nose Modifiers", mods, noseList); bridge.style.display = "inline"; break;
-            case "lips": populateSelect("Lip Modifiers", mods, lipList); bridge.style.display = "none"; break;
-            case "chin": populateSelect("Jawlines", mods, jawList); bridge.style.display = "none"; break;
-            default: mods.style.display = "none"; bridge.style.display = "none"; return;
-        }
-        mods.style.display = "inline";
-    }
-
-    function populateFaceFeature(feature) {
-        const sel = document.getElementById("facialFeatureType");
-        sel.innerHTML = "";
-        const dVar = VALUE_TABLES[feature] || [];
-        dVar.forEach(type => {
-            const option = document.createElement("option");
-            option.value = type.value; option.textContent = type.text;
-            sel.appendChild(option);
-        });
-    }
-
-    function populateBodyFeature(feature) {
-        const sel = document.getElementById("bodyFeatureType");
-        sel.innerHTML = "";
-        const dVar = VALUE_TABLES[feature] || [];
-        dVar.forEach(type => {
-            const option = document.createElement("option");
-            option.value = type.value; option.textContent = type.text;
-            sel.appendChild(option);
-        });
-    }
-
-    function setToolTip(type, value) {
-        if (type === "none") { toolTipObj.textContent = ""; return; }
-        const featureSel = (type === "facial") ? facialFeatureObj : bodyFeatureObj;
-        const dVar = VALUE_TABLES[featureSel.value] || [];
-        const result = dVar.find(item => item.value === value);
-        toolTipObj.textContent = (result && result.toolTip) ? result.toolTip : "";
-        persistSelections();
-    }
-
-    //#endregion
-
-    //#region Setters for non-facial/body selects
-
-    function setFeature(destKey, value, feats, pText) {
-        feats[destKey] = value;
-        setFeatureText(pTextObj, feats);
-        persistSelections();
-    }
-
-    function setFeatureType(type, value) {
-        if (type === "facial") {
-            const faceSelect = facialFeatureObj;
-            const modbox = modifiersObj;
-            const nosebridge = bridgesObj;
-            let v = value;
-
-            if (faceSelect.value === "nose" && nosebridge.value) v = `${v} ${nosebridge.value}`;
-            if (["nose", "eyebrows", "lips", "chin"].includes(faceSelect.value) && modbox.value) v = `${modbox.value} ${v}`;
-
-            if (faceSelect.value === "eyebrows" && hairElements.hairColor) {
-                const base = hairElements.hairColor.substring(0, hairElements.hairColor.length - 5);
-                v = `${base} ${v}`;
-            }
-            features[faceSelect.value] = v;
-        } else {
-            const bodySelect = bodyFeatureObj;
-            features[bodySelect.value] = value;
-        }
-        setFeatureText(pTextObj, features);
-        persistSelections();
-    }
-
-    function setFeatureTypeWithMod(modifier) {
-        const faceSelect = facialFeatureObj;
-        const feature = facialFeatureTypeObj;
-        let color = hairElements.hairColor;
-
-        switch (faceSelect.value) {
-            default: break;
-            case "lips":
-            case "chin":
-            case "eyebrows": {
-                let v = `${modifier} ${feature.value}`;
-                if (faceSelect.value === "eyebrows" && color) {
-                    const base = color.substring(0, color.length - 5);
-                    v = `${base} ${v}`;
-                }
-                features[faceSelect.value] = v;
-                break;
-            }
-            case "nose": {
-                features[faceSelect.value] = `${modifiersObj.value} ${feature.value} ${bridgesObj.value}`;
-                break;
-            }
-        }
-        setFeatureText(pTextObj, features);
-        persistSelections();
-    }
-
-    //#endregion
-
-    //#region Randomizer + update
-
-    function genRandomFeatures() {
-        features.gender = ["male", "female"][getRandomInt(0, 2)];
-        features.eyeColor = eyeColorVt[getRandomInt(0, eyeColorVt.length)].value;
-        features.skinColor = skinColorVt[getRandomInt(0, skinColorVt.length)].value;
-        features.age = ageVt[7].value;
-        features.freckles = frecklesVt[getRandomInt(0, frecklesVt.length)].value;
-
-        const hairColor = hairColorVt[getRandomInt(1, hairColorVt.length)].value;
-        if (features.gender === "male") {
-            features.facialHair = facialHairVt[getRandomInt(0, facialHairVt.length)].value;
-            hairElements.hairStyle = maleHairStyles[getRandomInt(0, maleHairStyles.length)].value;
-        } else {
-            features.facialHair = "";
-            hairElements.hairStyle = femaleHairStyles[getRandomInt(0, femaleHairStyles.length)].value;
-        }
-        hairElements.hairColor = hairColor;
-        hairElements.highlights = ""; // optional
-        features.hair = [hairElements.hairColor, hairElements.highlights, hairElements.hairStyle].filter(Boolean).join(" ");
-
-        faceFeatsVt.forEach(item => {
-            const dArr = VALUE_TABLES[item.value] || [];
-            if (dArr.length > 1) features[item.value] = dArr[getRandomInt(1, dArr.length)].value;
-        });
-        bodyFeatsVt.forEach(item => {
-            const dArr = VALUE_TABLES[item.value] || [];
-            if (dArr.length > 1) features[item.value] = dArr[getRandomInt(1, dArr.length)].value;
-        });
-        if (features.gender === "male") features.bustSize = "";
-
-        setFeatureText(pTextObj, features);
-        picsObj.style.display = "inline";
-        if (typeof update === "function") update();
-    }
-
-    function updateImages() {
-        picsObj.style.display = "inline";
-        if (typeof update === "function") update();
-    }
-
-    //#endregion
-
-    //#region AI description
-
-    function genDescriptionOutput(aiFace, responseEl, loaderEl) {
-        aiFace.style.display = "none";
-        responseEl.style.display = "inline-block";
-        loaderEl.innerHTML = output.evaluateItem; // provided by your plugin
-    }
-
-    function parseOutput() {
-        const text = responseElObj.value;
-        const pattern = /- (?<key>[\w\s]+): (?<val>[^\n]+)/gi;
-
-        for (const match of text.matchAll(pattern)) {
-            const keyRaw = (match.groups.key || "").trim();
-            const valRaw = (match.groups.val || "").trim();
-            const key = keyRaw.toLowerCase();
-
-            if (key === "name") { pNameObj.innerHTML = valRaw; continue; }
-            if (key === "age") { pNameObj.innerHTML = pNameObj.innerHTML + ", " + valRaw; continue; }
-
-            if (key.includes("hair")) {
-                if (key.includes("color")) {
-                    const idx = hairColorVt.findIndex(o => (o.value || '').toLowerCase().includes(valRaw.toLowerCase()));
-                    const val = (idx > -1 ? hairColorVt[idx].value : valRaw);
-                    features.hairColor = features.eyebrowColor = features.bodyHairColor = val;
-                    hairElements.hairColor = val;
-                } else {
-                    hairElements.hairStyle = valRaw; // naive: append/replace style
-                }
-                features.hair = [hairElements.hairColor, hairElements.highlights, hairElements.hairStyle].filter(Boolean).join(" ");
-                continue;
-            }
-
-            const keyNorm = keyRaw.replace(/\s+/g, '');
-            const dArr = VALUE_TABLES[keyNorm] || [];
-            if (dArr.length) {
-                const idx2 = dArr.findIndex(o => (o.value || '').toLowerCase().includes(valRaw.toLowerCase()));
-                features[keyNorm] = (idx2 > -1 ? dArr[idx2].value : valRaw);
-            } else if (Object.prototype.hasOwnProperty.call(features, keyNorm)) {
-                features[keyNorm] = valRaw;
-            }
-        }
-
-        setFeatureText(pTextObj, features);
-        responseElObj.style.display = "none";
-        aiFaceObj.style.display = "inline";
-        picsObj.style.display = "inline";
-        if (typeof update === "function") update();
-    }
-
-    //#endregion
-
-    //#region Setup
-
-    function setupSelects() {
-        populateSelect("Skin Tone", skinColorObj, skinColorVt);
-        populateSelect("Eye Color", eyeColorObj, eyeColorVt);
-        populateSelect("Age", ageObj, ageVt);
-        populateSelect("Glasses", glassesObj, glassesVt);
-        populateSelect("Freckles", frecklesObj, frecklesVt);
-        populateSelect("Facial Hair", facialHairObj, facialHairVt);
-        populateSelect("Facial Features", facialFeatureObj, faceFeatsVt);
-        populateSelect("Body Features", bodyFeatureObj, bodyFeatsVt);
-        populateSelect("Hair", hairObj, hairVt);
-        populateSelect("Bridge", bridgesObj, noseBridgeVt);
-        populateSelect("Ethnicity", ethnicityObj, ethnicityVt);
-        populateSelect("Clothing", clothingObj, clothingVt);
-    }
-    setupSelects();
-
-    // master listener for selects
-    document.querySelectorAll("select").forEach(select => {
-        select.addEventListener("change", function () {
-            switch (this.id) {
-                case "facialFeature":
-                    populateFaceFeature(this.value);
-                    populateModifier(this.value, bridgesObj, modifiersObj, eyebrowModVt, noseModVt, lipModVt, jawlineVt);
-                    setToolTip("none", this.value);
-                    break;
-
-                case "facialFeatureType":
-                    setFeatureType("facial", this.value);
-                    setToolTip("facial", this.value);
-                    break;
-
-                case "bodyFeature":
-                    populateBodyFeature(this.value);
-                    setToolTip("none", this.value);
-                    break;
-
-                case "bodyFeatureType":
-                    setFeatureType("body", this.value);
-                    setToolTip("body", this.value);
-                    break;
-
-                case "hair":
-                    populateHair(this.value, hairTypeObj, genderObj, hairColorVt, highlightVt, maleHairStyles, femaleHairStyles);
-                    setToolTip("none", this.value);
-                    break;
-
-                case "hairType":
-                    setHairElement(this.value, hairObj, hairElements, features, pTextObj);
-                    setToolTip("none", this.value);
-                    break;
-
-                case "modifiers":
-                case "bridges":
-                    setFeatureTypeWithMod(this.value);
-                    break;
-
-                case "preset":
-                    // load selected preset into features
-                    const pick = listFeatures.find(x => x.name === this.value);
-                    if (pick) {
-                        Object.assign(features, deepCopyObject(pick), { name: "" });
-                        // also refresh local hairElements if present in string
-                        // (cheap parse: keep existing hairElements unless you want a full parser)
-                        setFeatureText(pTextObj, features);
-                    }
-                    break;
-
-                default:
-                    setFeature(this.id.split('FeatureType')[0], this.value, features, pTextObj);
-                    setToolTip("none", this.value);
-                    break;
-            }
-        });
-    });
-
-    //#endregion
-</script>
-
 </html>
