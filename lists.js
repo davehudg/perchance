@@ -38,7 +38,7 @@ const eyebrowsVt = [{ value: "", text: "", toolTip: "" },
     { value: "thin eyebrows", weight: 1, text: "Thin Eyebrows", toolTip: "These are delicate and fine, often associated with a youthful or elegant look." },
     { value: "feathered eyebrows", weight: 1, text: "Feathered Eyebrows", toolTip: "Feathered eyebrows have a soft, textured look with small hairs growing in multiple directions, resembling feathers." },
     { value: "rounded eyebrows", weight: 1, text: "Rounded Eyebrows", toolTip: "With a smooth, rounded shape, these eyebrows frame the eyes and can appear soft and approachable." }];
-const eyebrowModVt = [
+const eyebrowModVt = [{ value: "", text: "", toolTip: "" }, 
     { value: "thick", weight: 1, text: "Thick", toolTip: "" },
     { value: "thin", weight: 1, text: "Thin", toolTip: "" },
     { value: "Full", weight: 1, text: "Full", toolTip: "" },
@@ -82,7 +82,7 @@ const noseVt = [{ value: "", text: "", toolTip: "" },
     { value: "bulbous nose", weight: 1, text: "Bulbous Nose", toolTip: "A nose that is wide at the tip and often rounded, creating a prominent feature." },
     { value: "rounded tip nose", weight: 1, text: "Rounded Tip Nose", toolTip: "A nose with a rounded tip, which can appear softer and more youthful." },
     { value: "pointed nose", weight: 1, text: "Pointed nose" }];
-const noseModVt = [
+const noseModVt = [{ value: "", text: "", toolTip: "" }, 
     { value: "broad", weight: 1, text: "Broad", toolTip: "A nose that is wider at the bridge and can give a strong, bold look." },
     { value: "upturned", weight: 1, text: "Upturned", toolTip: "Nostrils that face upwards, often associated with a cheerful or playful expression." },
     { value: "slightly upturned", weight: 1, text: "Slightly Upturned", toolTip: "A subtle upturn that adds a touch of charm without being overly pronounced." },
@@ -90,7 +90,7 @@ const noseModVt = [
     { value: "narrow", weight: 1, text: "Narrow", toolTip: "A nose that is slender and less wide." },
     { value: "downturned", weight: 1, text: "Downturned", toolTip: "Nostrils that face downwards, often linked to a more solemn or serious look." },
     { value: "sloped", weight: 1, text: "Sloped", toolTip: "A nose that gradually narrows from the bridge to the tip." }];
-const noseBridgeVt = [
+const noseBridgeVt = [{ value: "", text: "", toolTip: "" }, 
     { value: "with flat nose bridge", weight: 1, text: "Flat Nose Bridge", toolTip: "A nose with a minimal to non-existent ridge between the eyes." },
     { value: "with high nose bridge", weight: 1, text: "High Nose Bridge", toolTip: "A pronounced ridge that creates a sharp angle between the eyes and the nose." },
     { value: "with low nose bridge", weight: 1, text: "Low Nose Bridge", toolTip: "A gently curved bridge that sits closer to the face." },
@@ -107,7 +107,7 @@ const lipsVt = [{ value: "", text: "", toolTip: "" },
     { value: "full lips", weight: 1, text: "Full Lips", toolTip: "Lips that are naturally plump and fill the space between the nose and chin, often associated with sensuality and beauty." },
     { value: "thin lips", weight: 1, text: "Thin Lips", toolTip: "Lips that are less plump, closer to the natural line of the mouth, which can give a more refined and elegant appearance." },
     { value: "heart-shaped lips", text: "Heart-shaped Lips", toolTip: "An upper lip that is shorter and curves inward to create a heart-like shape when viewed from the side." }];
-const lipModVt = [
+const lipModVt = [{ value: "", text: "", toolTip: "" }, 
     { value: "pouty", weight: 1, text: "Pouty", toolTip: "Lips that have a natural or exaggerated fullness to the lower lip, creating a pouting or kissable look." },
     { value: "well-defined", text: "Well-defined", toolTip: "Lips that have a clear and distinct border, which can make the mouth appear smaller and more precise." },
     { value: "cupid's bow", text: "Cupid's Bow", toolTip: "A distinctive upper lip shape with a peaked bow in the center, often considered a symbol of beauty." },
@@ -121,7 +121,7 @@ const chinVt = [{ value: "", text: "", toolTip: "" },
     { value: "round chin", weight: 1, text: "Round Chin", toolTip: "A chin that is fully rounded, which can balance out a square jawline and add a touch of softness to the face." },
     { value: "square chin", weight: 1, text: "Square Chin", toolTip: "A chin that has a 90-degree angle at the tip, aligning with a square jawline for a more robust and structured look." },
     { value: "cleft chin", weight: 1, text: "Cleft Chin", toolTip: "A chin with a distinct groove in the center, which can be found on any of the base chin types, adding a unique and often attractive feature." }];
-const jawlineVt = [
+const jawlineVt = [{ value: "", text: "", toolTip: "" }, 
     { value: "strong jawline with ", weight: 1, text: "Strong Jawline", toolTip: "A jawline that is well-defined and angular." },
     { value: "round jawline with ", weight: 1, text: "Round Jawline", toolTip: "A jawline that is gently curved and soft." },
     { value: "square jawline with ", weight: 1, text: "Square Jawline", toolTip: "A powerful, structured jawline that emphasizes the chin." }];
@@ -162,11 +162,11 @@ const foreheadVt = [{ value: "", text: "" }, { value: "high forehead", weight: 1
     { value: "broad forehead", weight: 1, text: "broad forehead" }, { value: "narrow forehead", weight: 1, text: "narrow forehead" }];
 const heightVt = [{ value: "", text: "" }, { value: "short", weight: 1, text: "short" }, { value: "average height", weight: 1, text: "average height" }, 
     { value: "tall", weight: 1, text: "tall" }];
-const maleHairStyles = [{ value: "comb over", weight: 1, text: "Comb Over" }, { value: "quiff", weight: 1, text: "Quiff" }, { value: "buzz cut", weight: 1, text: "Buzz Cut" },
+const maleHairStyles = [{ value: "", text: "", toolTip: "" }, { value: "comb over", weight: 1, text: "Comb Over" }, { value: "quiff", weight: 1, text: "Quiff" }, { value: "buzz cut", weight: 1, text: "Buzz Cut" },
     { value: "crew cut", weight: 1, text: "Crew Cut" }, { value: "short afro", weight: 1, text: "Short Afro" }, { value: "afro", weight: 1, text: "Afro" },
     { value: "side part with short hair", weight: 1, text: "Side Part With Short Hair" }, { value: "ivy league haircut", weight: 1, text: "Ivy League Haircut" },
     { value: "fade", weight: 1, text: "Fade" }, { value: "slicked back", weight: 1, text: "Slicked Back" }, { value: "textured crop", weight: 1, text: "Textured Crop" }];
-const femaleHairStyles = [{ value: "pixie cut", weight: 1, text: "Pixie Cut" }, { value: "textured pixie cut", weight: 1, text: "Textured Pixie Cut" }, 
+const femaleHairStyles = [{ value: "", text: "", toolTip: "" }, { value: "pixie cut", weight: 1, text: "Pixie Cut" }, { value: "textured pixie cut", weight: 1, text: "Textured Pixie Cut" }, 
     { value: "undercut", weight: 1, text: "Undercut" }, { value: "crew cut", weight: 1, text: "Crew Cut" }, { value: "buzz cut", weight: 1, text: "Buzz Cut" }, { value: "spiky short hair", weight: 1, text: "Spiky Short Hair" }, 
     { value: "layered bob", weight: 1, text: "Layered Bob" }, { value: "tousled short hair", weight: 1, text: "Tousled Short Hair" }, { value: "short braids", weight: 1, text: "Short Braids" },
     { value: "shoulder-length layers", text: "Shoulder-Length Layers" }, { value: "medium curly hair", weight: 1, text: "Medium Curly Hair" }, { value: "wavy medium hair", weight: 1, text: "Wavy Medium Hair" },
@@ -175,32 +175,32 @@ const femaleHairStyles = [{ value: "pixie cut", weight: 1, text: "Pixie Cut" }, 
     { value: "balayage highlights", weight: 1, text: "Balayage Highlights" }, { value: "loose waves", weight: 1, text: "Loose Waves" }, { value: "braids", weight: 1, text: "Braids" },
     { value: "updo", weight: 1, text: "Updo" }, { value: "high ponytail", weight: 1, text: "High Ponytail" }, { value: "long layered hair", weight: 1, text: "Long Layered Hair" },
     { value: "long hair with bangs", weight: 1, text: "Long Hair With Bangs" }];
-const ageVt = [{ value: "infant", weight: 1, text: "Infant" }, { value: "toddler", weight: 1, text: "Toddler" }, { value: "preschooler", weight: 1, text: "Preschooler" }, 
+const ageVt = [{ value: "", text: "", toolTip: "" }, { value: "infant", weight: 1, text: "Infant" }, { value: "toddler", weight: 1, text: "Toddler" }, { value: "preschooler", weight: 1, text: "Preschooler" }, 
     { value: "child", weight: 1, text: "Child" }, { value: "pre-teen", text: "Pre-Teen" }, { value: "teenager", weight: 1, text: "Teenager" }, 
     { value: "young adult", weight: 1, text: "Young Adult" }, { value: "adult", weight: 1, text: "Adult" }, { value: "middle-aged", text: "Middle-Aged" }, 
     { value: "senior", weight: 1, text: "Senior" }, { value: "elderly", weight: 1, text: "Elderly" }, { value: "geriatric", weight: 1, text: "Geriatric" }];
-const skinColorVt = [{ value: "fair skin", weight: 1, text: "Fair" }, { value: "Ivory colored skin", weight: 1, text: "Ivory" }, { value: "olive skin", weight: 1, text: "Olive" }, 
+const skinColorVt = [{ value: "", text: "", toolTip: "" }, { value: "fair skin", weight: 1, text: "Fair" }, { value: "Ivory colored skin", weight: 1, text: "Ivory" }, { value: "olive skin", weight: 1, text: "Olive" }, 
     { value: "Beige colored skin", weight: 1, text: "Beige" }, { value: "Caramel colored skin", weight: 1, text: "Caramel" }, { value: "Honey colored skin", weight: 1, text: "Honey" }, 
     { value: "Toffee colored skin", weight: 1, text: "Toffee" }, { value: "Chestnut colored skin", weight: 1, text: "Chestnut" }, { value: "Walnut colored skin", weight: 1, text: "Walnut" }, 
     { value: "Mocha colored skin", weight: 1, text: "Mocha" }, { value: "Cocoa colored skin", weight: 1, text: "Cocoa" }, { value: "chocolate colored skin", weight: 1, text: "Chocolate" }, 
     { value: "dark chocolate colored skin", weight: 1, text: "Dark Chocolate" }, { value: " light green skin", weight: 1, text: "Green" }, { value: "light blue skin", weight: 1, text: "Blue" }];
-const eyeColorVt = [{ value: "grey eyes", weight: 1, text: "Grey" }, { value: "blue eyes", weight: 1, text: "Blue" }, { value: "green eyes", weight: 1, text: "Green" }, 
+const eyeColorVt = [{ value: "", text: "", toolTip: "" }, { value: "grey eyes", weight: 1, text: "Grey" }, { value: "blue eyes", weight: 1, text: "Blue" }, { value: "green eyes", weight: 1, text: "Green" }, 
     { value: "brown eyes", weight: 1, text: "Brown" }, { value: "hazel eyes", weight: 1, text: "Hazel" }, { value: "amber eyes", weight: 1, text: "Amber eyes"}];
-const glassesVt = [{ value: "cat eye glasses", weight: 1, text: "Cat Eye" }, { value: "browline glasses", weight: 1, text: "Browline" }, { value: "oval glasses", weight: 1, text: "Oval" }, 
+const glassesVt = [{ value: "", text: "", toolTip: "" }, { value: "cat eye glasses", weight: 1, text: "Cat Eye" }, { value: "browline glasses", weight: 1, text: "Browline" }, { value: "oval glasses", weight: 1, text: "Oval" }, 
     { value: "rectangle glasses", weight: 1, text: "Rectangle" }, { value: "round glasses", weight: 1, text: "Round" }, { value: "aviator glasses", weight: 1, text: "Aviators" }, 
     { value: "sunglasses", weight: 1, text: "Sunglasses" }];
-const frecklesVt = [{ value: "light freckles", weight: 1, text: "Light freckles" }, { value: "freckles on the bridge of nose", weight: 1, text: "bridge of nose" }, 
+const frecklesVt = [{ value: "", text: "", toolTip: "" }, { value: "light freckles", weight: 1, text: "Light freckles" }, { value: "freckles on the bridge of nose", weight: 1, text: "bridge of nose" }, 
     { value: "heavy freckles", weight: 1, text: "Heavy freckles" }];
-const facialHairVt = [{ value: "clean-shaven", text: "Clean-shaven" }, { value: "stubble", weight: 1, text: "Stubble" }, { value: "short beard", weight: 1, text: "Short Beard" }, 
+const facialHairVt = [{ value: "", text: "", toolTip: "" }, { value: "clean-shaven", text: "Clean-shaven" }, { value: "stubble", weight: 1, text: "Stubble" }, { value: "short beard", weight: 1, text: "Short Beard" }, 
     { value: "medium beard", weight: 1, text: "Medium Beard" }, { value: "long beard", weight: 1, text: "Long Beard" }, { value: "very long beard", weight: 1, text: "Very Long Beard" }, 
     { value: "mustache", weight: 1, text: "Mustache" }, { value: "goatee", weight: 1, text: "Goatee" }, { value: "van dyke", weight: 1, text: "Van Dyke" }, 
     { value: "soul patch", weight: 1, text: "Soul Patch" }, { value: "chin strap", weight: 1, text: "Chin Strap" }, { value: "mutton chops", weight: 1, text: "Mutton Chops" }, 
     { value: "beardstache", weight: 1, text: "Beardstache" }, { value: "ducktail", weight: 1, text: "Ducktail" }, { value: "balbo", weight: 1, text: "Balbo" }, { value: "verdi", weight: 1, text: "Verdi" }];
-const faceFeatsVt = [{ value: "faceShape", weight: 1, text: "Face Shape" }, { value: "faceLength", weight: 1, text: "Face Length" }, { value: "hairline", weight: 1, text: "Hairline" }, 
+const faceFeatsVt = [{ value: "", text: "", toolTip: "" }, { value: "faceShape", weight: 1, text: "Face Shape" }, { value: "faceLength", weight: 1, text: "Face Length" }, { value: "hairline", weight: 1, text: "Hairline" }, 
     { value: "forehead", weight: 1, text: "Forehead" }, { value: "eyebrows", weight: 1, text: "Eyebrows" }, { value: "browRidge", weight: 1, text: "Brow Ridge" }, 
     { value: "eyeShape", weight: 1, text: "Eye Shape" }, { value: "eyeSet", weight: 1, text: "Eye Set" }, { value: "nose", weight: 1, text: "Nose" }, { value: "cheekBones", weight: 1, text: "Cheek Bones" }, 
     { value: "lips", weight: 1, text: "Lips" }, { value: "chin", weight: 1, text: "Chin" }];
-const bodyFeatsVt = [{ value: "bodyType", weight: 1, text: "Body Type" }, { value: "bodyComp", weight: 1, text: "Body Composition" }, { value: "muscularity", weight: 1, text: "Muscularity" }, 
+const bodyFeatsVt = [{ value: "", text: "", toolTip: "" }, { value: "bodyType", weight: 1, text: "Body Type" }, { value: "bodyComp", weight: 1, text: "Body Composition" }, { value: "muscularity", weight: 1, text: "Muscularity" }, 
     { value: "height", weight: 1, text: "Height" }, { value: "bustSize", weight: 1, text: "Bust Size" }];
 const hairColorVt = [{ value: "", text: "" }, { value: "black hair", weight: 1, text: "Black" }, { value: "dark brown hair", weight: 1, text: "Dark Brown" }, 
     { value: "brown hair", weight: 1, text: "Brown" }, { value: "sandy brown hair", weight: 1, text: "Sandy Brown" }, { value: "blonde hair", weight: 1, text: "Blonde" }, 
