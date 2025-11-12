@@ -496,7 +496,6 @@
     qs("#portraitPrompt").textContent = facePrompt;
     qs("#bodyPrompt").textContent = bodyPrompt;
     qs("#outputName").textContent = FBG.state.output.name;
-    qs("#pText").value = `${facePrompt}\n\n${bodyPrompt}`;
   }
 
   //-----------------------------------------------------------------------------
