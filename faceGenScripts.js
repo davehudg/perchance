@@ -179,6 +179,10 @@
   function init() {
     wireTheme();
     setupSelectsFromLists();
+    let eth = qs("#selEthnicity");
+      if (eth) eth.selectedIndex = 0;
+    let hs = qs("#selHairStyle");
+      if (hs) hs.selectedIndex = 0;
     hydrateSelections();
     wireSelects();
     wireButtons();
@@ -247,7 +251,12 @@
       return `<option value="${escapeHtml(String(v))}"${tip}>${escapeHtml(isBlank ? "(none)" : label)}</option>`;
     }).join("");
 
-    el.selectedIndex = firstNonBlankIndex(el);
+    if (selectId === "selEthnicity" || selectId === "selHairStyle") {
+      // These should default to (none)
+      el.selectedIndex = 0;
+    } else {
+      el.selectedIndex = firstNonBlankIndex(el);
+    }
   }
 
   //-----------------------------------------------------------------------------
@@ -317,9 +326,14 @@
   //=============================================================================
   // State sync
   //=============================================================================
+  
   function hydrateSelections() {
     qsa("select").forEach(s => {
       if (!s.options.length) return;
+      if (s.id === "selEthnicity" || s.id === "selHairStyle") {
+        s.selectedIndex = 0; // remain unselected / (none)
+        return;
+      }
       s.selectedIndex = firstNonBlankIndex(s);
     });
     syncStateFromDOM();
@@ -418,6 +432,23 @@
       if (isFemale()) randomize(["#selBustSize"]); else setEmpty("#selBustSize");
       qs("#inpBodyCustom").value = "";
       syncStateFromDOM(); renderAll();
+    });
+
+    on(qs("#btnReset"), "click", () => {
+      // set all selects to blank "(none)"
+      qsa("select").forEach(sel => { if (sel) sel.value = ""; });
+
+      // clear free-text notes
+      const fc = qs("#inpFaceCustom"); if (fc) fc.value = "";
+      const bc = qs("#inpBodyCustom"); if (bc) bc.value = "";
+
+      // refresh hair styles when gender is blank and toggle gendered fields
+      populateHairStyleByGender();
+      reflectGenderFields();
+
+      // sync + re-render outputs
+      syncStateFromDOM();
+      renderAll();
     });
 
     // Presets

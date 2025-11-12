@@ -8,12 +8,13 @@
 </head>
 <body>
   <div class="wrap" id="appRoot">
-    <header class="toolbar" aria-label="Top toolbar">
-      <button id="themeToggle" type="button" aria-pressed="false" aria-label="Toggle theme">🌓 Theme</button>
-      <!-- <span class="vis-badge">WCAG AA contrast</span> -->
-      <div style="flex:1"></div>
-      <button id="copyBtn" type="button" aria-label="Copy prompt to clipboard">📋 Copy</button>
-    </header>
+<header class="toolbar" aria-label="Top toolbar">
+  <button id="themeToggle" type="button" aria-pressed="false" aria-label="Toggle theme">🌓 Theme</button>
+  <div style="flex:1"></div>
+  <!-- ADD: master reset button -->
+  <button id="btnReset" type="button" class="danger" aria-label="Reset all">↺ Reset</button>
+</header>
+
 
     <main class="stack" role="main">
 
@@ -114,8 +115,14 @@
       </section>
 
       <section class="card stack" aria-labelledby="ptext-label">
-        <h3 id="ptext-label">Combined Prompt</h3>
+        <div class="toolbar">
+          <h3 id="ptext-label">Combined Prompt</h3>
+          <div style="flex:1"></div>
+          <button id="copyBtn" type="button" aria-label="Copy prompt to clipboard">📋 Copy</button>
+        </div>
+
         <textarea id="pText" aria-describedby="ptext-help" spellcheck="false"></textarea>
+
         <div id="ptext-help" class="footer-note">“Copy” copies from this box. You can also edit it manually.</div>
       </section>
 
@@ -167,5 +174,6 @@
 
   <script src="https://davehudg.github.io/perchance/lists.js"></script>
   <script src="https://davehudg.github.io/perchance/faceGenScripts.js"></script>
+  <!-- <script src="faceGenScripts.js"></script> -->
 </body>
 </html>
