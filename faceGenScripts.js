@@ -408,10 +408,16 @@
   //-----------------------------------------------------------------------------
 
   function wireButtons() {
-    on(qs("#copyBtn"), "click", async () => {
-      const text = qs("#pText").value || "";
-      try { await navigator.clipboard.writeText(text); flash(qs("#copyBtn"), "Copied!"); }
-      catch { fallbackCopy(text); flash(qs("#copyBtn"), "Copied (fallback)!"); }
+    on(qs("#copyFaceBtn"), "click", async () => {
+      const text = qs("#portraitPrompt").textContent || "";
+      try { await navigator.clipboard.writeText(text); flash(qs("#copyFaceBtn"), "Copied!"); }
+      catch { fallbackCopy(text); flash(qs("#copyFaceBtn"), "Copied (fallback)!"); }
+    });
+
+    on(qs("#copyBodyBtn"), "click", async () => {
+      const text = qs("#bodyPrompt").textContent || "";
+      try { await navigator.clipboard.writeText(text); flash(qs("#copyBodyBtn"), "Copied!"); }
+      catch { fallbackCopy(text); flash(qs("#copyBodyBtn"), "Copied (fallback)!"); }
     });
 
     on(qs("#btnRandomFace"), "click", () => {
@@ -487,8 +493,8 @@
     FBG.state.output.body = bodyPrompt;
     FBG.state.output.name = buildOutputName();
 
-    qs("#outputFace").textContent = facePrompt;
-    qs("#outputBody").textContent = bodyPrompt;
+    qs("#portraitPrompt").textContent = facePrompt;
+    qs("#bodyPrompt").textContent = bodyPrompt;
     qs("#outputName").textContent = FBG.state.output.name;
     qs("#pText").value = `${facePrompt}\n\n${bodyPrompt}`;
   }

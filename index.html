@@ -104,26 +104,23 @@
         <h2 id="sec-output" class="sr-only">Outputs</h2>
 
         <div class="card stack" id="outputFaceCard" aria-labelledby="oface-label">
-          <h3 id="oface-label">Portrait Prompt</h3>
-          <div id="outputFace" aria-live="polite"></div>
+          
+          <div class="toolbar">
+            <h3 id="oface-label">Portrait Prompt</h3>
+            <div style="flex:1"></div>
+            <button id="copyFaceBtn" type="button" aria-label="Copy portrait prompt to clipboard">📋 Copy</button>
+          </div>
+          <div id="portraitPrompt" aria-live="polite"></div>
         </div>
 
         <div class="card stack" id="outputBodyCard" aria-labelledby="obody-label">
-          <h3 id="obody-label">Body Prompt</h3>
-          <div id="outputBody" aria-live="polite"></div>
+          <div class="toolbar">
+            <h3 id="obody-label">Body Prompt</h3>
+            <div style="flex:1"></div>
+            <button id="copyBodyBtn" type="button" aria-label="Copy body prompt to clipboard">📋 Copy</button>
+            </div>
+          <div id="bodyPrompt" aria-live="polite"></div>
         </div>
-      </section>
-
-      <section class="card stack" aria-labelledby="ptext-label">
-        <div class="toolbar">
-          <h3 id="ptext-label">Combined Prompt</h3>
-          <div style="flex:1"></div>
-          <button id="copyBtn" type="button" aria-label="Copy prompt to clipboard">📋 Copy</button>
-        </div>
-
-        <textarea id="pText" aria-describedby="ptext-help" spellcheck="false"></textarea>
-
-        <div id="ptext-help" class="footer-note">“Copy” copies from this box. You can also edit it manually.</div>
       </section>
 
       <!-- DO NOT MOVE -->
