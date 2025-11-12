@@ -10,22 +10,55 @@
 (function () {
   "use strict";
 
-  //=============================================================================
-  // Small DOM helpers
-  //=============================================================================
-  const qs  = (s, r = document) => r.querySelector(s);
+  // ===== GLOBAL CONSTANTS / NAMES =====
+  const ID = {
+    gender: "selGender",
+    hairStyle: "selHairStyle",
+    facialHairWrap: "facialHairWrap",
+    facialHair: "selFacialHair",
+    bustWrap: "bustSizeWrap",
+    bustSize: "selBustSize",
+  };
 
-  //-----------------------------------------------------------------------------
+  const LIST_MAP = {
+    // Generic
+    selGender:      "genderVt",
+    selEthnicity:   "ethnicityVt",
+    selEyeColor:    "eyeColorVt",
+    selSkinTone:    "skinColorVt",
+    selAge:         "ageVt",
+    selGlasses:     "glassesVt",
+    selFreckles:    "frecklesVt",
+    selClothing:    "clothingVt",
 
-  const qsa = (s, r = document) => Array.from(r.querySelectorAll(s));
+    // Hair (style via maleHairStyles/femaleHairStyles)
+    selHairColor:       "hairColorVt",
+    selHairHighlights:  "highlightVt",
+    selFacialHair:      "facialHairVt",
 
-  //-----------------------------------------------------------------------------
+    // Face
+    selFaceShape:   "faceShapeVt",
+    selFaceLength:  "faceLengthVt",
+    selHairline:    "hairlineVt",
+    selEyebrows:    "eyebrowsVt",
+    selBrowRidge:   "browRidgeVt",
+    selEyeShape:    "eyeShapeVt",
+    selEyeSet:      "eyeSetVt",
+    selNose:        "noseVt",
+    selCheekBones:  "cheekBonesVt",
+    selLips:        "lipsVt",
+    selChin:        "chinVt",
+    selJawline:     "jawlineVt",
 
-  const on  = (el, ev, fn, opts) => el && el.addEventListener(ev, fn, opts);
+    // Body
+    selBodyType:    "bodyTypeVt",
+    selComposition: "bodyCompVt",
+    selMuscularity: "muscularityVt",
+    selHeight:      "heightVt",
+    selBustSize:    "bustSizeVt",
+  };
 
-  //=============================================================================
-  // Bind lists.js identifiers into a safe lookup (no eval / no window[])
-  //=============================================================================
+  // lists.js bindings captured once (no window[] and no eval)
   const LISTS_SOURCE = {};
   try { LISTS_SOURCE.genderVt = genderVt; } catch {}
   try { LISTS_SOURCE.ethnicityVt = ethnicityVt; } catch {}
@@ -61,6 +94,23 @@
   try { LISTS_SOURCE.heightVt = heightVt; } catch {}
   try { LISTS_SOURCE.bustSizeVt = bustSizeVt; } catch {}
 
+  // hoisted helpers (strict male/female)
+  function isMale()   { return (document.getElementById(ID.gender)?.value || "").toLowerCase() === "male"; }
+  function isFemale() { return (document.getElementById(ID.gender)?.value || "").toLowerCase() === "female"; }
+
+  //=============================================================================
+  // Small DOM helpers
+  //=============================================================================
+  const qs  = (s, r = document) => r.querySelector(s);
+
+  //-----------------------------------------------------------------------------
+
+  const qsa = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+  //-----------------------------------------------------------------------------
+
+  const on  = (el, ev, fn, opts) => el && el.addEventListener(ev, fn, opts);
+
   //=============================================================================
   // App State
   //=============================================================================
@@ -85,47 +135,6 @@
     wireTheme: () => {}
   };
   window.FBG = FBG;
-
-  //=============================================================================
-  // lists.js names → select IDs (exact per your corrections)
-  //=============================================================================
-  const LIST_MAP = {
-    // Generic
-    selGender:      "genderVt",
-    selEthnicity:   "ethnicityVt",
-    selEyeColor:    "eyeColorVt",
-    selSkinTone:    "skinColorVt",
-    selAge:         "ageVt",
-    selGlasses:     "glassesVt",
-    selFreckles:    "frecklesVt",
-    selClothing:    "clothingVt",
-
-    // Hair (style handled dynamically)
-    selHairColor:       "hairColorVt",
-    selHairHighlights:  "highlightVt",
-    selFacialHair:      "facialHairVt",
-
-    // Face
-    selFaceShape:   "faceShapeVt",
-    selFaceLength:  "faceLengthVt",
-    selHairline:    "hairlineVt",
-    selEyebrows:    "eyebrowsVt",
-    selBrowRidge:   "browRidgeVt",
-    selEyeShape:    "eyeShapeVt",
-    selEyeSet:      "eyeSetVt",
-    selNose:        "noseVt",
-    selCheekBones:  "cheekBonesVt",
-    selLips:        "lipsVt",
-    selChin:        "chinVt",
-    selJawline:     "jawlineVt",
-
-    // Body
-    selBodyType:    "bodyTypeVt",
-    selComposition: "bodyCompVt",
-    selMuscularity: "muscularityVt",
-    selHeight:      "heightVt",
-    selBustSize:    "bustSizeVt",
-  };
 
   //=============================================================================
   // Boot
@@ -208,13 +217,13 @@
   //=============================================================================
   // Select population from LISTS_SOURCE (value/text/toolTip), ignoring weight
   //=============================================================================
+
   function populateFromListVar(varName, selectId) {
-    const el = document.getElementById(selectId);
+    let el = document.getElementById(selectId);
     if (!el) return;
 
-    const list = Array.isArray(LISTS_SOURCE[varName]) ? LISTS_SOURCE[varName] : null;
+    let list = Array.isArray(LISTS_SOURCE[varName]) ? LISTS_SOURCE[varName] : null;
     if (!list) {
-      console.warn(`[FBG] lists.js variable not found: ${varName} for #${selectId}`);
       el.innerHTML = `<option value="">(none)</option>`;
       el.selectedIndex = 0;
       return;
@@ -225,16 +234,16 @@
       return;
     }
 
-    // Preserve source order; keep sentinel first row if present
-    const [first, ...rest] = list;
-    const firstIsBlank = first && first.value === "" && (first.text ?? "") === "";
-    const finalList = firstIsBlank ? [first, ...rest] : list.slice();
+    let first = list[0];
+    let rest = list.slice(1);
+    let firstIsBlank = first && first.value === "" && (first.text ?? "") === "";
+    let finalList = firstIsBlank ? [first, ...rest] : list.slice();
 
     el.innerHTML = finalList.map(item => {
-      const v = item.value ?? "";
-      const label = (item.text ?? item.value ?? "").trim();
-      const tip = item.toolTip ? ` title="${escapeHtml(item.toolTip)}"` : "";
-      const isBlank = !v && !label;
+      let v = item.value ?? "";
+      let label = (item.text ?? item.value ?? "").trim();
+      let tip = item.toolTip ? ` title="${escapeHtml(item.toolTip)}"` : "";
+      let isBlank = !v && !label;
       return `<option value="${escapeHtml(String(v))}"${tip}>${escapeHtml(isBlank ? "(none)" : label)}</option>`;
     }).join("");
 
@@ -244,48 +253,40 @@
   //-----------------------------------------------------------------------------
 
   function populateHairStyleByGender() {
-    const raw = (document.getElementById("selGender")?.value || "");
-    const g = raw.toLowerCase().trim();
-
-    // broader matches to cover common variants in your lists.js values
-    const isMasc = /\b(male|man|masc|masculine)\b/.test(g);
-    const isFem  = /\b(female|woman|fem|feminine)\b/.test(g);
-
-    const styleSelect = document.getElementById("selHairStyle");
+    let g = (document.getElementById(ID.gender)?.value || "").toLowerCase();
+    let styleSelect = document.getElementById(ID.hairStyle);
     if (!styleSelect) return;
 
-    const prev = styleSelect.value;
-
-    const exactVar = isMasc ? "maleHairStyles" :
-                    isFem  ? "femaleHairStyles" :
-                    null;
+    let prev = styleSelect.value;
+    let exactVar = (g === "male") ? "maleHairStyles" : (g === "female") ? "femaleHairStyles" : null;
 
     if (exactVar) {
-      populateFromListVar(exactVar, "selHairStyle");
+      populateFromListVar(exactVar, ID.hairStyle);
       styleSelect.selectedIndex = firstNonBlankIndex(styleSelect);
     } else {
-      // gender empty/other → merge both
-      const male   = Array.isArray(LISTS_SOURCE.maleHairStyles)   ? LISTS_SOURCE.maleHairStyles   : [];
-      const female = Array.isArray(LISTS_SOURCE.femaleHairStyles) ? LISTS_SOURCE.femaleHairStyles : [];
-      const merged = [];
-      const pushUnique = (arr) => {
-        for (const it of arr) {
+      let male   = Array.isArray(LISTS_SOURCE.maleHairStyles)   ? LISTS_SOURCE.maleHairStyles   : [];
+      let female = Array.isArray(LISTS_SOURCE.femaleHairStyles) ? LISTS_SOURCE.femaleHairStyles : [];
+      let merged = [];
+      let out = [];
+
+      let hasBlank = (a)=> a[0] && a[0].value === "" && (a[0].text ?? "") === "";
+      let pushUnique = (arr) => {
+        for (let it of arr) {
           if (!merged.some(m => (m.value ?? "") === (it.value ?? "") && (m.text ?? "") === (it.text ?? ""))) {
             merged.push(it);
           }
         }
       };
-      const hasBlank = (a)=> a[0] && a[0].value === "" && (a[0].text ?? "") === "";
-      const out = [];
+
       if (hasBlank(male) || hasBlank(female)) out.push({ value:"", text:"", toolTip:"" });
       pushUnique(male.filter((_,i)=> i || !hasBlank(male)));
       pushUnique(female.filter((_,i)=> i || !hasBlank(female)));
 
       styleSelect.innerHTML = out.concat(merged).map(item => {
-        const v = item.value ?? "";
-        const label = (item.text ?? item.value ?? "").trim();
-        const tip = item.toolTip ? ` title="${escapeHtml(item.toolTip)}"` : "";
-        const isBlank = !v && !label;
+        let v = item.value ?? "";
+        let label = (item.text ?? item.value ?? "").trim();
+        let tip = item.toolTip ? ` title="${escapeHtml(item.toolTip)}"` : "";
+        let isBlank = !v && !label;
         return `<option value="${escapeHtml(String(v))}"${tip}>${escapeHtml(isBlank ? "(none)" : label)}</option>`;
       }).join("");
 
@@ -293,7 +294,6 @@
       styleSelect.selectedIndex = firstNonBlankIndex(styleSelect);
     }
 
-    // try to restore previous selection if it still exists
     if (prev && Array.from(styleSelect.options).some(o => o.value === prev)) {
       styleSelect.value = prev;
     }
@@ -375,11 +375,11 @@
   function wireSelects() {
     qsa("select").forEach(s => {
       on(s, "change", () => {
-        if (s.id === "selGender") {
-          populateHairStyleByGender();                // repopulate styles for new gender
-          const hs = qs("#selHairStyle");
-          if (hs) hs.selectedIndex = firstNonBlankIndex(hs);  // pick an actual value
-          reflectGenderFields(s.value);               // update visibility for facial/bust
+        if (s.id === ID.gender) {
+          populateHairStyleByGender();
+          let hs = document.getElementById(ID.hairStyle);
+          if (hs) hs.selectedIndex = firstNonBlankIndex(hs);
+          reflectGenderFields();
         }
 
         syncStateFromDOM();
@@ -431,31 +431,19 @@
   //=============================================================================
   // Gendered conditionals
   //=============================================================================
-function reflectGenderFields(genderVal) {
-  const g = String(genderVal || qs("#selGender")?.value || "").toLowerCase();
+  
+  function reflectGenderFields() {
+    let male = isMale();
+    let female = isFemale();
 
-  // broaden match a bit in case your values are "man"/"masc"/etc.
-  const isMale   = /\b(male|man|masc)\b/i.test(g);
-  const isFemale = /\b(female|woman|fem)\b/i.test(g);
+    let facialWrap = document.getElementById(ID.facialHairWrap);
+    if (facialWrap) facialWrap.style.display = male ? "" : "none";
+    if (!male) setEmpty(`#${ID.facialHair}`);
 
-  // Facial hair visibility (male only)
-  const facialWrap = qs("#facialHairWrap");
-  if (facialWrap) facialWrap.style.display = isMale ? "" : "none";
-  if (!isMale) setEmpty("#selFacialHair");
-
-  // Bust size visibility (female only)
-  const bustWrap = qs("#bustSizeWrap");
-  if (bustWrap) bustWrap.style.display = isFemale ? "" : "none";
-  if (!isFemale) setEmpty("#selBustSize");
-}
-
-  //-----------------------------------------------------------------------------
-
-  const isMale   = () => /male/i.test(qs("#selGender")?.value || "");
-
-  //-----------------------------------------------------------------------------
-
-  const isFemale = () => /female/i.test(qs("#selGender")?.value || "");
+    let bustWrap = document.getElementById(ID.bustWrap);
+    if (bustWrap) bustWrap.style.display = female ? "" : "none";
+    if (!female) setEmpty(`#${ID.bustSize}`);
+  }
 
   //=============================================================================
   // Rendering / Prompt construction (uses `value` tokens, fixed order, no weight)
