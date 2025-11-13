@@ -959,24 +959,14 @@
   })();
 
   /* ============================================================
-    PHASE 3: SECTION-LEVEL RESET (scaffold + working behavior)
-    - Resets only selects/inputs inside a given section.
-    - Safe for Perchance; no globals, no eval.
+    PHASE 3: SECTION-LEVEL RESET (DOM-scoped)
+    - Resets only selects/inputs inside the section that contains
+      the clicked .reset-section button.
+    - No reliance on IDs; uses closest('section.card').
     ============================================================ */
   (function () {
     "use strict";
 
-    // Map friendly names → section DOM nodes (adjust IDs to your markup)
-    function getSectionRoot(sectionName) {
-      switch ((sectionName || "").toLowerCase()) {
-        case "generic": return document.querySelector("#section-generic") || document.querySelector("[data-section-root='generic']");
-        case "face":    return document.querySelector("#section-face")    || document.querySelector("[data-section-root='face']");
-        case "body":    return document.querySelector("#section-body")    || document.querySelector("[data-section-root='body']");
-        default:        return null;
-      }
-    }
-
-    // Try to set selects to an explicit empty option or the (none) option/text
     function resetSelectToNone(select) {
       if (!select) return;
       let targetIndex = -1;
@@ -984,60 +974,88 @@
       // Prefer option with empty value
       for (let i = 0; i < select.options.length; i++) {
         const opt = select.options[i];
-        if (opt.value === "") { targetIndex = i; break; }
+        if ((opt.value || "") === "") {
+          targetIndex = i;
+          break;
+        }
       }
-      // Fallback: option whose text includes (none) — case insensitive
+
+      // Fallback: option whose text includes (none)
       if (targetIndex < 0) {
         const rx = /\(none\)/i;
         for (let i = 0; i < select.options.length; i++) {
-          if (rx.test(select.options[i].text)) { targetIndex = i; break; }
+          if (rx.test(select.options[i].text || "")) {
+            targetIndex = i;
+            break;
+          }
         }
       }
+
       // Fallback: first option
-      if (targetIndex < 0 && select.options.length) targetIndex = 0;
+      if (targetIndex < 0 && select.options.length) {
+        targetIndex = 0;
+      }
 
       if (targetIndex >= 0) {
         select.selectedIndex = targetIndex;
-        // Fire change so your existing bindings recompute prompts
         select.dispatchEvent(new Event("change", { bubbles: true }));
       }
     }
 
-    // Reset text/number inputs
     function resetInputControl(el) {
       if (!el) return;
-      if (el.type === "text" || el.type === "search" || el.type === "number") {
+      const t = (el.type || "").toLowerCase();
+      if (t === "text" || t === "search" || t === "number") {
         el.value = "";
         el.dispatchEvent(new Event("input", { bubbles: true }));
         el.dispatchEvent(new Event("change", { bubbles: true }));
       }
     }
 
-    function resetSection(sectionName) {
-      const root = getSectionRoot(sectionName);
-      if (!root) return;
+    function resetSectionElement(sectionEl) {
+      if (!sectionEl) return;
 
-      // Selects
-      root.querySelectorAll("select").forEach(resetSelectToNone);
+      // Reset all selects in this section
+      sectionEl.querySelectorAll("select").forEach(resetSelectToNone);
 
-      // Inputs (extend as needed)
-      root.querySelectorAll("input[type='text'], input[type='search'], input[type='number']").forEach(resetInputControl);
+      // Reset basic text/number inputs in this section
+      sectionEl
+        .querySelectorAll("input[type='text'], input[type='search'], input[type='number']")
+        .forEach(resetInputControl);
 
-      // If your app exposes a safe updater, call it (optional, won’t throw if absent)
-      try { window.FBG && typeof window.FBG.update === "function" && window.FBG.update(); } catch {}
+      // Let the app recompute prompts if FBG.update exists
+      try {
+        if (window.FBG && typeof window.FBG.update === "function") {
+          window.FBG.update();
+        }
+      } catch {
+        // ignore
+      }
 
-      // Also emit a lightweight custom event for any external hooks
-      root.dispatchEvent(new CustomEvent("sectionReset", { bubbles: true, detail: { section: sectionName } }));
+      // Fire a custom event for any external listeners
+      sectionEl.dispatchEvent(
+        new CustomEvent("sectionReset", {
+          bubbles: true,
+          detail: { sectionId: sectionEl.id || null }
+        })
+      );
     }
 
-    // Wire the buttons once DOM is ready
     function wireSectionResetButtons() {
-      document.addEventListener("click", (evt) => {
-        const btn = evt.target.closest(".reset-section");
-        if (!btn) return;
-        const name = btn.getAttribute("data-section");
-        resetSection(name);
-      }, { passive: true });
+      document.addEventListener(
+        "click",
+        (evt) => {
+          const btn = evt.target.closest(".reset-section");
+          if (!btn) return;
+
+          // Find the nearest section.card that contains this button
+          const sectionEl = btn.closest("section.card") || btn.closest("section");
+          if (!sectionEl) return;
+
+          resetSectionElement(sectionEl);
+        },
+        { passive: true }
+      );
     }
 
     if (document.readyState === "loading") {
