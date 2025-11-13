@@ -21,6 +21,10 @@
       <!-- GENERIC -->
       <section class="card stack" aria-labelledby="generic-label">
         <h3 id="generic-label">Generic</h3>
+        <div class="section-actions">
+          <button type="button" class="reset-section" data-section="generic" aria-label="Reset Generic">Reset Generic</button>
+        </div>
+
         <div class="row-3">
           <div><label for="selGender">Gender</label><select id="selGender"></select></div>
           <div><label for="selEthnicity">Ethnicity</label><select id="selEthnicity"></select></div>
@@ -53,6 +57,10 @@
       <!-- FACE -->
       <section class="card stack" aria-labelledby="face-label">
         <h3 id="face-label">Face</h3>
+        <div class="section-actions">
+          <button type="button" class="reset-section" data-section="face" aria-label="Reset Face">Reset Face</button>
+        </div>
+
         <div class="row-3">
           <div><label for="selFaceShape">Shape</label><select id="selFaceShape"></select></div>
           <div><label for="selFaceLength">Length</label><select id="selFaceLength"></select></div>
@@ -80,6 +88,10 @@
       <!-- BODY -->
       <section class="card stack" aria-labelledby="body-label">
         <h3 id="body-label">Body</h3>
+        <div class="section-actions">
+          <button type="button" class="reset-section" data-section="body" aria-label="Reset Body">Reset Body</button>
+        </div>
+
         <div class="row-3">
           <div><label for="selBodyType">Type</label><select id="selBodyType"></select></div>
           <div><label for="selComposition">Composition</label><select id="selComposition"></select></div>
@@ -105,6 +117,7 @@
 
         <div class="card stack" id="outputFaceCard" aria-labelledby="oface-label">
           
+          <!-- PORTRAIT PROMPT-->
           <div class="toolbar">
             <h3 id="oface-label">Portrait Prompt</h3>
             <div style="flex:1"></div>
@@ -114,6 +127,7 @@
           <div id="portraitPrompt" aria-live="polite"></div>
         </div>
 
+        <!-- BODY PROMPT-->
         <div class="card stack" id="outputBodyCard" aria-labelledby="obody-label">
           <div class="toolbar">
             <h3 id="obody-label">Body Prompt</h3>
@@ -125,6 +139,7 @@
       </section>
 
       <!-- DO NOT MOVE -->
+       <!-- OUTPUT -->
       <section class="card stack" aria-labelledby="oname-label">
         <h3 id="oname-label">Output Name</h3>
         <div id="outputName" aria-live="polite">
