@@ -143,3 +143,90 @@ button.danger { border-color: var(--danger); color: var(--danger); background: t
   overflow-wrap: anywhere;
   white-space: normal;
 }
+/* ============================================================
+   PHASE 3: MOBILE ACCORDION + COMPACT LAYOUT STYLES
+   ============================================================ */
+@media (max-width: 768px) {
+  :root {
+    --gap: 0.5rem;
+    --pad: 0.75rem;
+    --tap: 44px;
+  }
+
+  body, .wrap { padding: 0; }
+  .toolbar { padding: 0.5rem var(--pad); gap: 0.5rem; }
+  .toolbar button { min-height: var(--tap); padding: 0.5rem 0.75rem; }
+
+  main.content { padding: var(--pad); }
+
+  .card {
+    padding: 0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* Accordion styling */
+  .acc-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font: inherit;
+    font-weight: 600;
+    background: var(--card-hd, transparent);
+    border: 0;
+    padding: 0.9rem 1rem;
+    min-height: var(--tap);
+    cursor: pointer;
+  }
+  .acc-toggle:focus-visible {
+    outline: 2px solid var(--focus, #5b9dd9);
+    outline-offset: 2px;
+  }
+  .acc-toggle::after {
+    content: "";
+    display: inline-block;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 160ms ease;
+    margin-left: 0.5rem;
+  }
+  .acc-toggle[aria-expanded="true"]::after {
+    transform: rotate(-135deg);
+  }
+
+  .acc-panel {
+    display: grid;
+    gap: var(--gap);
+    padding: 0 1rem 0.9rem 1rem;
+  }
+  .acc-panel[hidden] {
+    display: none !important;
+  }
+
+  /* Compact grid layout */
+  .row-2, .row-3, .row-4 {
+    display: grid;
+    gap: var(--gap);
+  }
+  .row-2 { grid-template-columns: 1fr 1fr; }
+  .row-3 { grid-template-columns: 1fr 1fr; }
+  .row-4 { grid-template-columns: 1fr 1fr; }
+  label { font-size: 0.95rem; }
+  select, input[type="text"], input[type="number"], button {
+    min-height: var(--tap);
+    font-size: 1rem;
+  }
+
+  /* Combined prompt section sticks to bottom */
+  .combined-output {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg, #fff);
+    padding: 0.75rem;
+    border-top: 1px solid var(--border, #ddd);
+  }
+}

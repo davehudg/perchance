@@ -851,6 +851,113 @@
 
   const iso = () => new Date().toISOString();
 
+  /* ============================================================
+    PHASE 3: MOBILE ACCORDION + COMPACT LAYOUT ENHANCEMENTS
+    ------------------------------------------------------------
+    Converts each .card section into a collapsible accordion on
+    screens <=768px.  Safe, Perchance-compatible, no globals.
+    ============================================================ */
+
+  (function () {
+    "use strict";
+
+    const MOBILE_MEDIA = window.matchMedia("(max-width: 768px)");
+    const ACC_INIT_ATTR = "data-acc-init";
+
+    function sectionToAccordion(section) {
+      if (!section || section.hasAttribute(ACC_INIT_ATTR)) return;
+      const heading = section.querySelector("h1,h2,h3,h4,h5,h6");
+      if (!heading) return;
+
+      const btn = document.createElement("button");
+      btn.className = "acc-toggle";
+      btn.type = "button";
+      btn.setAttribute("aria-expanded", "false");
+      btn.textContent = heading.textContent.trim();
+
+      const panel = document.createElement("div");
+      panel.className = "acc-panel";
+      panel.hidden = true;
+
+      const nodesToMove = [];
+      for (let n = heading.nextSibling; n; n = n.nextSibling) nodesToMove.push(n);
+      nodesToMove.forEach(n => panel.appendChild(n));
+
+      heading.replaceWith(btn);
+      section.appendChild(panel);
+
+      const panelId = section.id ? section.id + "-panel" : ("acc-" + Math.random().toString(36).slice(2));
+      panel.id = panelId;
+      btn.setAttribute("aria-controls", panelId);
+
+      btn.addEventListener("click", () => {
+        const open = btn.getAttribute("aria-expanded") === "true";
+        if (!open) {
+          section.parentElement?.querySelectorAll(".card .acc-toggle[aria-expanded='true']").forEach(b => {
+            if (b !== btn) {
+              b.setAttribute("aria-expanded", "false");
+              const pid = b.getAttribute("aria-controls");
+              const p = pid ? document.getElementById(pid) : null;
+              if (p) p.hidden = true;
+            }
+          });
+        }
+        btn.setAttribute("aria-expanded", String(!open));
+        panel.hidden = open;
+      });
+
+      section.setAttribute(ACC_INIT_ATTR, "1");
+    }
+
+    function teardownAccordion(section) {
+      if (!section || !section.hasAttribute(ACC_INIT_ATTR)) return;
+      const btn = section.querySelector(".acc-toggle");
+      const panel = section.querySelector(".acc-panel");
+      if (!btn || !panel) return;
+
+      const h = document.createElement("h3");
+      h.textContent = btn.textContent;
+      section.insertBefore(h, btn);
+
+      while (panel.firstChild) {
+        section.insertBefore(panel.firstChild, panel);
+      }
+      btn.remove();
+      panel.remove();
+      section.removeAttribute(ACC_INIT_ATTR);
+    }
+
+    function applyAccordion() {
+      const sections = document.querySelectorAll("main section.card");
+      sections.forEach(sec => {
+        if (MOBILE_MEDIA.matches) sectionToAccordion(sec);
+        else teardownAccordion(sec);
+      });
+    }
+
+    function enhanceButtons() {
+      document.querySelectorAll("button").forEach(b => {
+        if (!b.style.minHeight) b.style.minHeight = "44px";
+      });
+    }
+
+    function initMobileUI() {
+      applyAccordion();
+      enhanceButtons();
+      try {
+        MOBILE_MEDIA.addEventListener("change", applyAccordion);
+      } catch {
+        MOBILE_MEDIA.addListener(applyAccordion);
+      }
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initMobileUI);
+    } else {
+      initMobileUI();
+    }
+  })();
+
   //=============================================================================
   // End IIFE
   //=============================================================================
