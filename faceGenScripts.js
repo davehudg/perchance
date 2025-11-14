@@ -457,12 +457,13 @@
       renderAll();
     });
 
-    // Presets
-    on(qs("#btnPresetAdd"), handlePresetAdd);
-    on(qs("#btnPresetUpdate"), handlePresetUpdate);
-    on(qs("#btnPresetDelete"), handlePresetDelete);
-    on(qs("#btnImport"), handleImport);
-    on(qs("#btnExport"), handleExport);
+        // Presets
+    on(qs("#btnPresetAdd"),    "click", handlePresetAdd);
+    on(qs("#btnPresetUpdate"), "click", handlePresetUpdate);
+    on(qs("#btnPresetDelete"), "click", handlePresetDelete);
+    on(qs("#btnImport"),       "click", handleImport);
+    on(qs("#btnExport"),       "click", handleExport);
+
   }
 
   //=============================================================================

@@ -230,3 +230,13 @@ button.danger { border-color: var(--danger); color: var(--danger); background: t
     border-top: 1px solid var(--border, #ddd);
   }
 }
+/* Highlight active preset in the list */
+#presetList button[aria-pressed="true"] {
+  background: var(--focus);
+  color: #fff;
+  border-color: var(--focus);
+}
+
+#presetList button[aria-pressed="true"]:hover {
+  background: var(--focus);
+}
